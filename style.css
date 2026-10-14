@@ -1,0 +1,195 @@
+/* =========================================================
+   CUSTOM DESIGNED LOGOS & BADGES FOR 5 CORE PILLARS
+   ========================================================= */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feat-card {
+  padding: 1.8rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.feat-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+}
+
+/* Base Logo Badge Container */
+.custom-logo-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  z-index: 2;
+}
+
+.logo-inner-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 18px;
+  opacity: 0.45;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.feat-card:hover .custom-logo-badge {
+  transform: translateY(-4px) scale(1.08);
+}
+
+.feat-card:hover .logo-inner-ring {
+  opacity: 0.9;
+}
+
+.feat-number {
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+.feat-card h4 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  color: #ffffff;
+}
+
+.feat-card p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1.4rem;
+}
+
+/* Footer Tag Chips */
+.feat-card-footer {
+  margin-top: auto;
+}
+
+.feat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.3rem 0.75rem;
+  border-radius: 30px;
+}
+
+/* 1. Dynamic Roadmap: Cyan & Electric Blue */
+.badge-roadmap {
+  background: linear-gradient(135deg, #06b6d4, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 10px 24px -5px rgba(6, 182, 212, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.badge-roadmap .logo-inner-ring {
+  border: 2px dashed #06b6d4;
+}
+.feat-roadmap:hover {
+  border-color: rgba(6, 182, 212, 0.5);
+  box-shadow: 0 15px 35px -10px rgba(6, 182, 212, 0.3);
+}
+.chip-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  color: #67e8f9;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+/* 2. Smart Video Engine: Crimson Red & Neon Pink */
+.badge-video {
+  background: linear-gradient(135deg, #ef4444, #db2777);
+  color: #ffffff;
+  box-shadow: 0 10px 24px -5px rgba(239, 68, 68, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.badge-video .logo-inner-ring {
+  border: 2px dashed #f43f5e;
+}
+.feat-video:hover {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 15px 35px -10px rgba(239, 68, 68, 0.3);
+}
+.chip-red {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* 3. Progress Tracker: Emerald Green & Mint */
+.badge-progress {
+  background: linear-gradient(135deg, #10b981, #0d9488);
+  color: #ffffff;
+  box-shadow: 0 10px 24px -5px rgba(16, 185, 129, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.badge-progress .logo-inner-ring {
+  border: 2px dashed #10b981;
+}
+.feat-progress:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 15px 35px -10px rgba(16, 185, 129, 0.3);
+}
+.chip-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #86efac;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* 4. Curated Notes: Amber Gold & Sunset Orange */
+.badge-notes {
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  color: #ffffff;
+  box-shadow: 0 10px 24px -5px rgba(245, 158, 11, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.badge-notes .logo-inner-ring {
+  border: 2px dashed #f59e0b;
+}
+.feat-notes:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 15px 35px -10px rgba(245, 158, 11, 0.3);
+}
+.chip-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fde68a;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* 5. AI Assistant: Neon Violet & Cyber Purple */
+.badge-ai {
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  color: #ffffff;
+  box-shadow: 0 10px 26px -5px rgba(139, 92, 246, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.badge-ai .logo-inner-ring {
+  border: 2px dashed #c084fc;
+}
+.feat-ai {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(14, 20, 38, 0.85));
+}
+.feat-ai:hover {
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 0 15px 40px -10px rgba(168, 85, 247, 0.35);
+}
+.chip-purple {
+  background: rgba(139, 92, 246, 0.15);
+  color: #d8b4fe;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
