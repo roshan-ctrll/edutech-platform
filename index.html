@@ -7,7 +7,7 @@
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
   
-  <!-- Modern Google Fonts & FontAwesome -->
+  <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -90,6 +90,7 @@
     .gradient-text {
       background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #38bdf8 100%);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
@@ -97,8 +98,8 @@
       background: linear-gradient(90deg, #1e1b4b, #172554, #1e1b4b);
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       text-align: center;
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
+      padding: 0.45rem 1rem;
+      font-size: 0.82rem;
       color: #c7d2fe;
     }
 
@@ -115,29 +116,36 @@
     .nav-container {
       max-width: 1220px;
       margin: 0 auto;
-      padding: 0.75rem 1.5rem;
+      padding: 0.7rem 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-left-group {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
+      gap: 0.75rem;
       text-decoration: none;
     }
 
     .logo-box {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
     }
 
@@ -150,96 +158,29 @@
     }
 
     .brand-tag {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       letter-spacing: 1px;
       color: var(--text-dim);
       font-weight: 700;
       font-family: var(--font-mono);
     }
 
-    /* 3D Interactive Nav Buttons */
-    .nav-links {
-      display: flex;
-      gap: 0.8rem;
-      background: rgba(255, 255, 255, 0.03);
-      padding: 0.35rem 0.5rem;
-      border-radius: 50px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .nav-btn-3d {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.88rem;
-      font-weight: 600;
-      padding: 0.45rem 1rem;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-    }
-
-    .nav-btn-3d .nav-icon-wrap {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.82rem;
-      transition: all 0.3s;
-    }
-
-    /* Color Accents per Nav Button */
-    .nav-btn-tracks .nav-icon-wrap { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .nav-btn-roadmap .nav-icon-wrap { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .nav-btn-arch .nav-icon-wrap { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
-    .nav-btn-res .nav-icon-wrap { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-    .nav-btn-3d:hover {
-      color: #ffffff;
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.15);
-      transform: translateY(-2px);
-    }
-
-    .nav-btn-3d:hover .nav-icon-wrap {
-      transform: scale(1.15) rotate(5deg);
-      box-shadow: 0 0 12px currentColor;
-    }
-
-    .nav-btn-3d.active {
-      color: white;
-      background: rgba(59, 130, 246, 0.18);
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-    }
-
-    .ai-assistant-btn {
+    .ai-assistant-btn-left {
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.25));
       border: 1px solid rgba(139, 92, 246, 0.5);
       color: #ddd6fe;
-      padding: 0.55rem 1.15rem;
-      border-radius: 50px;
+      padding: 0.45rem 0.95rem;
+      border-radius: 30px;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.5rem;
       transition: all 0.3s;
     }
 
-    .ai-assistant-btn:hover {
+    .ai-assistant-btn-left:hover {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.6);
@@ -247,30 +188,125 @@
     }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #10b981;
       box-shadow: 0 0 10px #10b981;
     }
 
-    .auth-nav-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--border);
-      color: white;
-      padding: 0.55rem 1.15rem;
+    .nav-links {
+      display: flex;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.3rem 0.4rem;
       border-radius: 50px;
-      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-btn-3d {
+      color: var(--text-muted);
+      text-decoration: none;
       font-size: 0.85rem;
-      cursor: pointer;
+      font-weight: 600;
+      padding: 0.45rem 0.95rem;
+      border-radius: 30px;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .nav-btn-3d .nav-icon-wrap {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+    }
+
+    .nav-btn-tracks .nav-icon-wrap { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .nav-btn-roadmap .nav-icon-wrap { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .nav-btn-arch .nav-icon-wrap { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
+    .nav-btn-res .nav-icon-wrap { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    .nav-btn-3d:hover, .nav-btn-3d.active {
+      color: white;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* Sub-Navbar */
+    .sub-account-bar {
+      max-width: 1220px;
+      margin: 0.8rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .account-pill-card {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.4rem 0.9rem;
+      border-radius: 50px;
+      backdrop-filter: blur(12px);
+    }
+
+    .account-pill-text {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .auth-btn-styled {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+      color: white;
+      padding: 0.35rem 0.85rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
       transition: all 0.2s;
     }
 
-    .auth-nav-btn:hover {
-      background: rgba(255, 255, 255, 0.16);
+    .auth-btn-styled:hover {
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .admin-nav-btn {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(168, 85, 247, 0.3));
+      border: 1px solid rgba(168, 85, 247, 0.6);
+      color: #e9d5ff;
+      padding: 0.35rem 0.85rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .admin-nav-btn:hover {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+      transform: translateY(-1px);
     }
 
     .user-profile-pill {
@@ -279,25 +315,25 @@
       gap: 0.65rem;
       background: rgba(59, 130, 246, 0.15);
       border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 0.35rem 0.85rem;
+      padding: 0.3rem 0.75rem;
       border-radius: 50px;
     }
 
     .user-avatar {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
       background: var(--primary);
       color: white;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .user-name {
-      font-size: 0.86rem;
+      font-size: 0.84rem;
       font-weight: 600;
       color: #e2e8f0;
     }
@@ -307,15 +343,12 @@
       border: none;
       color: var(--text-dim);
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       transition: color 0.2s;
     }
 
     .logout-btn:hover { color: var(--error); }
 
-    /* =========================================================
-       3D SECTION TRANSITION PULSE & PERSPECTIVE ANIMATION
-       ========================================================= */
     .section-3d-unfold {
       animation: section3dFlyIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
     }
@@ -324,23 +357,18 @@
       0% {
         opacity: 0.2;
         transform: perspective(1200px) rotateX(16deg) translateZ(-80px) scale(0.94);
-        box-shadow: 0 0 50px rgba(59, 130, 246, 0.6);
-      }
-      60% {
-        transform: perspective(1200px) rotateX(-2deg) translateZ(10px) scale(1.01);
       }
       100% {
         opacity: 1;
         transform: perspective(1200px) rotateX(0deg) translateZ(0) scale(1);
-        box-shadow: var(--shadow-card);
       }
     }
 
-    /* Hero */
+    /* Hero Section */
     .hero {
       position: relative;
       text-align: center;
-      padding: 4.5rem 1.5rem 3.5rem;
+      padding: 3.5rem 1.5rem 3rem;
       max-width: 1100px;
       margin: 0 auto;
     }
@@ -413,9 +441,7 @@
       color: var(--text-main);
     }
 
-    .secondary-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
+    .secondary-btn:hover { background: rgba(255, 255, 255, 0.1); }
 
     /* Track Cards */
     .track-visual-cards {
@@ -463,10 +489,6 @@
       background: linear-gradient(to top, rgba(14, 20, 38, 0.95) 0%, rgba(14, 20, 38, 0.2) 60%, transparent 100%);
     }
 
-    .visual-card:hover .card-img-wrap img {
-      transform: scale(1.1);
-    }
-
     .track-tag {
       position: absolute;
       top: 12px;
@@ -485,31 +507,15 @@
     .tag-ai { background: rgba(139, 92, 246, 0.85); }
     .tag-dsa { background: rgba(16, 185, 129, 0.85); }
 
-    .card-info {
-      padding: 1.2rem 1.4rem;
-    }
-
+    .card-info { padding: 1.2rem 1.4rem; }
     .card-info-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 0.3rem;
     }
-
-    .card-info h4 {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .click-hint {
-      color: #60a5fa;
-      font-size: 0.85rem;
-    }
-
-    .card-info p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+    .card-info h4 { font-size: 1.2rem; font-weight: 700; }
+    .card-info p { font-size: 0.85rem; color: var(--text-muted); }
 
     /* Container */
     .container {
@@ -518,10 +524,7 @@
       padding: 0 1.5rem;
     }
 
-    .section-heading {
-      margin-bottom: 2.2rem;
-    }
-
+    .section-heading { margin-bottom: 2.2rem; }
     .section-heading.text-center {
       text-align: center;
       max-width: 740px;
@@ -552,7 +555,7 @@
       margin-top: 0.4rem;
     }
 
-    /* 5 Logos & Badges */
+    /* 5 Core Feature Cards */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -599,10 +602,7 @@
       pointer-events: none;
     }
 
-    .feat-card:hover .custom-logo-badge {
-      transform: translateY(-4px) scale(1.08);
-    }
-
+    .feat-card:hover .custom-logo-badge { transform: translateY(-4px) scale(1.08); }
     .feat-number {
       font-family: var(--font-mono);
       font-size: 1.1rem;
@@ -636,70 +636,28 @@
       border-radius: 30px;
     }
 
-    .badge-roadmap {
-      background: linear-gradient(135deg, #06b6d4, #2563eb);
-      color: #ffffff;
-      box-shadow: 0 10px 24px -5px rgba(6, 182, 212, 0.5);
-    }
+    .badge-roadmap { background: linear-gradient(135deg, #06b6d4, #2563eb); color: #fff; box-shadow: 0 10px 24px -5px rgba(6, 182, 212, 0.5); }
     .badge-roadmap .logo-inner-ring { border: 2px dashed #06b6d4; }
-    .chip-cyan {
-      background: rgba(6, 182, 212, 0.12);
-      color: #67e8f9;
-      border: 1px solid rgba(6, 182, 212, 0.3);
-    }
+    .chip-cyan { background: rgba(6, 182, 212, 0.12); color: #67e8f9; border: 1px solid rgba(6, 182, 212, 0.3); }
 
-    .badge-video {
-      background: linear-gradient(135deg, #ef4444, #db2777);
-      color: #ffffff;
-      box-shadow: 0 10px 24px -5px rgba(239, 68, 68, 0.5);
-    }
+    .badge-video { background: linear-gradient(135deg, #ef4444, #db2777); color: #fff; box-shadow: 0 10px 24px -5px rgba(239, 68, 68, 0.5); }
     .badge-video .logo-inner-ring { border: 2px dashed #f43f5e; }
-    .chip-red {
-      background: rgba(239, 68, 68, 0.12);
-      color: #fca5a5;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
+    .chip-red { background: rgba(239, 68, 68, 0.12); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-    .badge-progress {
-      background: linear-gradient(135deg, #10b981, #0d9488);
-      color: #ffffff;
-      box-shadow: 0 10px 24px -5px rgba(16, 185, 129, 0.5);
-    }
+    .badge-progress { background: linear-gradient(135deg, #10b981, #0d9488); color: #fff; box-shadow: 0 10px 24px -5px rgba(16, 185, 129, 0.5); }
     .badge-progress .logo-inner-ring { border: 2px dashed #10b981; }
-    .chip-green {
-      background: rgba(16, 185, 129, 0.12);
-      color: #86efac;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
+    .chip-green { background: rgba(16, 185, 129, 0.12); color: #86efac; border: 1px solid rgba(16, 185, 129, 0.3); }
 
-    .badge-notes {
-      background: linear-gradient(135deg, #f59e0b, #ea580c);
-      color: #ffffff;
-      box-shadow: 0 10px 24px -5px rgba(245, 158, 11, 0.5);
-    }
+    .badge-notes { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #fff; box-shadow: 0 10px 24px -5px rgba(245, 158, 11, 0.5); }
     .badge-notes .logo-inner-ring { border: 2px dashed #f59e0b; }
-    .chip-amber {
-      background: rgba(245, 158, 11, 0.12);
-      color: #fde68a;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
+    .chip-amber { background: rgba(245, 158, 11, 0.12); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
 
-    .badge-ai {
-      background: linear-gradient(135deg, #8b5cf6, #d946ef);
-      color: #ffffff;
-      box-shadow: 0 10px 26px -5px rgba(139, 92, 246, 0.6);
-    }
+    .badge-ai { background: linear-gradient(135deg, #8b5cf6, #d946ef); color: #fff; box-shadow: 0 10px 26px -5px rgba(139, 92, 246, 0.6); }
     .badge-ai .logo-inner-ring { border: 2px dashed #c084fc; }
-    .feat-ai {
-      background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(14, 20, 38, 0.85));
-    }
-    .chip-purple {
-      background: rgba(139, 92, 246, 0.15);
-      color: #d8b4fe;
-      border: 1px solid rgba(139, 92, 246, 0.4);
-    }
+    .feat-ai { background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(14, 20, 38, 0.85)); }
+    .chip-purple { background: rgba(139, 92, 246, 0.15); color: #d8b4fe; border: 1px solid rgba(139, 92, 246, 0.4); }
 
-    /* FOREGROUND 3D STAGE */
+    /* 3D Hologram Stage */
     .front-3d-stage {
       padding: 2.2rem;
       display: grid;
@@ -712,661 +670,112 @@
       box-shadow: 0 0 35px rgba(59, 130, 246, 0.2);
     }
 
-    .holo-stage-details h3 {
-      font-size: 1.8rem;
-      font-weight: 800;
-      margin: 0.5rem 0 0.8rem;
-    }
-
-    .holo-live-tag {
-      display: inline-block;
-      font-size: 0.72rem;
-      color: #38bdf8;
-      font-weight: 800;
-      letter-spacing: 1px;
-      font-family: var(--font-mono);
-    }
-
-    .holo-stage-details p {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      margin-bottom: 1.2rem;
-    }
-
-    .holo-badge-row {
-      display: flex;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .holo-stat-pill {
-      font-size: 0.75rem;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      color: #c7d2fe;
-    }
-
-    .holo-canvas-wrapper {
-      width: 100%;
-      height: 240px;
-      position: relative;
-      border-radius: 16px;
-      background: rgba(7, 10, 20, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-    }
-
-    #foreground-3d-canvas {
-      width: 100% !important;
-      height: 100% !important;
-      display: block;
-    }
-
-    .drag-hint {
-      position: absolute;
-      bottom: 10px;
-      right: 12px;
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      background: rgba(0, 0, 0, 0.6);
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-    }
+    .holo-stage-details h3 { font-size: 1.8rem; font-weight: 800; margin: 0.5rem 0 0.8rem; }
+    .holo-live-tag { display: inline-block; font-size: 0.72rem; color: #38bdf8; font-weight: 800; letter-spacing: 1px; font-family: var(--font-mono); }
+    .holo-stage-details p { font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.2rem; }
+    .holo-badge-row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .holo-stat-pill { font-size: 0.75rem; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 20px; color: #c7d2fe; }
+    .holo-canvas-wrapper { width: 100%; height: 240px; position: relative; border-radius: 16px; background: rgba(7, 10, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); overflow: hidden; }
+    #foreground-3d-canvas { width: 100% !important; height: 100% !important; display: block; }
+    .drag-hint { position: absolute; bottom: 10px; right: 12px; font-size: 0.72rem; color: var(--text-dim); background: rgba(0, 0, 0, 0.6); padding: 0.2rem 0.6rem; border-radius: 6px; }
 
     /* Track Dashboard */
-    .track-dashboard {
-      padding: 2.2rem;
-    }
-
-    .track-header h2 {
-      font-size: 1.45rem;
-      font-weight: 700;
-    }
-
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-
-    .filter-controls {
-      display: grid;
-      grid-template-columns: 2fr 1.5fr auto;
-      gap: 1.4rem;
-      align-items: flex-end;
-      margin-top: 1.5rem;
-    }
-
-    .filter-item label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      margin-bottom: 0.5rem;
-    }
-
-    .filter-item select {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      background: #111827;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .filter-item select:focus {
-      border-color: var(--primary);
-    }
+    .track-dashboard { padding: 2.2rem; }
+    .track-header h2 { font-size: 1.45rem; font-weight: 700; }
+    .subtitle { color: var(--text-muted); font-size: 0.9rem; }
+    .filter-controls { display: grid; grid-template-columns: 2fr 1.5fr auto; gap: 1.4rem; align-items: flex-end; margin-top: 1.5rem; }
+    .filter-item label { display: block; font-size: 0.82rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem; }
+    .filter-item select { width: 100%; padding: 0.85rem 1rem; background: #111827; border: 1px solid var(--border); border-radius: 12px; color: white; font-size: 0.95rem; outline: none; cursor: pointer; }
+    .filter-item select:focus { border-color: var(--primary); }
 
     /* Progress Box */
-    .progress-card {
-      padding: 2.2rem;
-      border-left: 5px solid var(--success);
-      margin-bottom: 1.8rem;
-    }
-
-    .progress-details {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1.5rem;
-    }
-
-    .badge-active {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.72rem;
-      color: var(--success);
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      font-family: var(--font-mono);
-    }
-
+    .progress-card { padding: 2.2rem; border-left: 5px solid var(--success); margin-bottom: 1.8rem; }
+    .progress-details { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+    .badge-active { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--success); font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
     .badge-active i { font-size: 0.55rem; }
+    .progress-details h2 { font-size: 1.65rem; font-weight: 800; margin-top: 0.3rem; }
+    .progress-stat-right { text-align: right; }
+    .pct-text { font-size: 2.8rem; font-weight: 900; color: #34d399; line-height: 1; display: block; font-family: var(--font-main); }
+    .pct-sub { font-size: 0.8rem; color: var(--text-dim); font-weight: 600; }
+    .progress-meter { width: 100%; height: 12px; background: rgba(255, 255, 255, 0.08); border-radius: 20px; overflow: hidden; margin-bottom: 1rem; }
+    .progress-meter-fill { height: 100%; background: linear-gradient(90deg, #10b981, #06b6d4); border-radius: 20px; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); transition: width 0.45s ease-out; }
+    .progress-meta-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
+    .streak-badge { background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 600; }
+    .autosave-tag { color: var(--text-dim); font-size: 0.8rem; }
 
-    .progress-details h2 {
-      font-size: 1.65rem;
-      font-weight: 800;
-      margin-top: 0.3rem;
-    }
-
-    .progress-stat-right {
-      text-align: right;
-    }
-
-    .pct-text {
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: #34d399;
-      line-height: 1;
-      display: block;
-      font-family: var(--font-main);
-    }
-
-    .pct-sub {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-
-    .progress-meter {
-      width: 100%;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 1rem;
-    }
-
-    .progress-meter-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #10b981, #06b6d4);
-      border-radius: 20px;
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
-      transition: width 0.45s ease-out;
-    }
-
-    .progress-meta-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-
-    .streak-badge {
-      background: rgba(249, 115, 22, 0.15);
-      color: #fb923c;
-      padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    .autosave-tag {
-      color: var(--text-dim);
-      font-size: 0.8rem;
-    }
-
-    .timeline-search-bar {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border);
-      padding: 0.85rem 1.2rem;
-      border-radius: 12px;
-      margin-bottom: 2rem;
-    }
-
+    .timeline-search-bar { display: flex; align-items: center; gap: 0.8rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); padding: 0.85rem 1.2rem; border-radius: 12px; margin-bottom: 2rem; }
     .timeline-search-bar i { color: var(--text-dim); }
-
-    .timeline-search-bar input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: white;
-      width: 100%;
-      font-size: 0.92rem;
-    }
+    .timeline-search-bar input { background: transparent; border: none; outline: none; color: white; width: 100%; font-size: 0.92rem; }
 
     /* Timeline */
-    .timeline-wrapper {
-      position: relative;
-    }
-
-    .milestones-timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 1.8rem;
-      position: relative;
-    }
-
-    .milestones-timeline::before {
-      content: '';
-      position: absolute;
-      top: 30px;
-      bottom: 30px;
-      left: 28px;
-      width: 2px;
-      background: linear-gradient(to bottom, #3b82f6, #8b5cf6, rgba(255, 255, 255, 0.05));
-      z-index: 1;
-    }
-
-    .milestone-card {
-      position: relative;
-      z-index: 2;
-      background: var(--bg-card);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 1.8rem;
-      margin-left: 60px;
-      transition: all 0.3s ease;
-    }
-
-    .milestone-card:hover {
-      transform: translateX(4px);
-      border-color: rgba(59, 130, 246, 0.4);
-    }
-
-    .milestone-card.completed {
-      border-color: rgba(16, 185, 129, 0.5);
-      background: rgba(16, 185, 129, 0.05);
-    }
-
-    .milestone-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
-    .milestone-title-area {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .custom-checkbox {
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      accent-color: var(--success);
-    }
-
-    .milestone-step-number {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      padding: 0.3rem 0.7rem;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      font-family: var(--font-mono);
-    }
-
-    .milestone-title-area h3 {
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-
-    .milestone-duration {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-    }
-
-    .prereq-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin: 0.6rem 0 1.2rem;
-    }
-
-    .prereq-pill {
-      font-size: 0.75rem;
-      background: rgba(245, 158, 11, 0.12);
-      color: #fcd34d;
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      padding: 0.25rem 0.7rem;
-      border-radius: 20px;
-      font-weight: 600;
-    }
-
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1rem;
-      margin-top: 0.8rem;
-    }
-
-    .video-item {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .video-info h5 {
-      font-size: 0.94rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
-    }
-
-    .video-creator {
-      font-size: 0.8rem;
-      color: #60a5fa;
-      font-weight: 600;
-    }
-
-    .video-duration {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-
-    .watch-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-top: 0.9rem;
-      padding: 0.55rem 1rem;
-      background: #dc2626;
-      color: white;
-      text-decoration: none;
-      font-size: 0.82rem;
-      border-radius: 8px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-
-    .watch-btn:hover {
-      background: #ef4444;
-      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-    }
+    .timeline-wrapper { position: relative; }
+    .milestones-timeline { display: flex; flex-direction: column; gap: 1.8rem; position: relative; }
+    .milestones-timeline::before { content: ''; position: absolute; top: 30px; bottom: 30px; left: 28px; width: 2px; background: linear-gradient(to bottom, #3b82f6, #8b5cf6, rgba(255, 255, 255, 0.05)); z-index: 1; }
+    .milestone-card { position: relative; z-index: 2; background: var(--bg-card); backdrop-filter: blur(14px); border: 1px solid var(--border); border-radius: 18px; padding: 1.8rem; margin-left: 60px; transition: all 0.3s ease; }
+    .milestone-card:hover { transform: translateX(4px); border-color: rgba(59, 130, 246, 0.4); }
+    .milestone-card.completed { border-color: rgba(16, 185, 129, 0.5); background: rgba(16, 185, 129, 0.05); }
+    .milestone-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem; }
+    .milestone-title-area { display: flex; align-items: center; gap: 1rem; }
+    .custom-checkbox { width: 24px; height: 24px; cursor: pointer; accent-color: var(--success); }
+    .milestone-step-number { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700; font-family: var(--font-mono); }
+    .milestone-title-area h3 { font-size: 1.25rem; font-weight: 700; }
+    .milestone-duration { font-size: 0.8rem; color: var(--text-muted); background: rgba(255, 255, 255, 0.05); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid var(--border); }
+    .prereq-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 1.2rem; }
+    .prereq-pill { font-size: 0.75rem; background: rgba(245, 158, 11, 0.12); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.25); padding: 0.25rem 0.7rem; border-radius: 20px; font-weight: 600; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.8rem; }
+    .video-item { background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .video-info h5 { font-size: 0.94rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .video-creator { font-size: 0.8rem; color: #60a5fa; font-weight: 600; }
+    .video-duration { font-size: 0.75rem; color: var(--text-dim); }
+    .watch-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.9rem; padding: 0.55rem 1rem; background: #dc2626; color: white; text-decoration: none; font-size: 0.82rem; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
+    .watch-btn:hover { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
 
     /* Resources Grid */
-    .resources-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .res-card {
-      padding: 2rem;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .res-tag {
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #38bdf8;
-      margin-bottom: 0.8rem;
-      font-family: var(--font-mono);
-    }
-
-    .res-icon-wrap {
-      width: 48px;
-      height: 48px;
-      background: rgba(59, 130, 246, 0.15);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #60a5fa;
-      font-size: 1.4rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .res-card h4 {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-    }
-
-    .res-card p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      flex-grow: 1;
-      margin-bottom: 1.4rem;
-    }
-
-    .res-action-btn {
-      color: #60a5fa;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
+    .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .res-card { padding: 2rem; position: relative; display: flex; flex-direction: column; }
+    .res-tag { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px; color: #38bdf8; margin-bottom: 0.8rem; font-family: var(--font-mono); }
+    .res-icon-wrap { width: 48px; height: 48px; background: rgba(59, 130, 246, 0.15); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #60a5fa; font-size: 1.4rem; margin-bottom: 1.2rem; }
+    .res-card h4 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .res-card p { font-size: 0.88rem; color: var(--text-muted); flex-grow: 1; margin-bottom: 1.4rem; }
+    .res-action-btn { color: #60a5fa; text-decoration: none; font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; }
 
     /* Auth Modal */
     .auth-dialog { max-width: 480px; }
+    .auth-tabs { display: flex; gap: 0.5rem; background: rgba(15, 23, 42, 0.85); padding: 0.35rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border); }
+    .auth-tab-btn { flex: 1; padding: 0.65rem; border-radius: 8px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+    .auth-tab-btn.active { background: var(--primary); color: white; }
+    .auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field label { font-size: 0.82rem; font-weight: 600; color: #cbd5e1; display: flex; align-items: center; gap: 0.4rem; }
+    .form-field input, .form-field select { padding: 0.85rem 1rem; background: #111827; border: 1px solid var(--border); border-radius: 10px; color: white; font-size: 0.92rem; outline: none; }
+    .form-field input:focus, .form-field select:focus { border-color: var(--primary); }
+    .auth-submit-btn { width: 100%; margin-top: 0.5rem; padding: 0.85rem; }
+    .auth-alert { padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.85rem; margin-bottom: 1rem; }
+    .auth-alert.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
+    .auth-alert.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #86efac; }
 
-    .auth-tabs {
-      display: flex;
-      gap: 0.5rem;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 0.35rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--border);
-    }
-
-    .auth-tab-btn {
-      flex: 1;
-      padding: 0.65rem;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
-
-    .auth-tab-btn.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
-    }
-
-    .form-field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-
-    .form-field label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #cbd5e1;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .form-field input, .form-field select {
-      padding: 0.85rem 1rem;
-      background: #111827;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: white;
-      font-size: 0.92rem;
-      outline: none;
-    }
-
-    .form-field input:focus, .form-field select:focus {
-      border-color: var(--primary);
-    }
-
-    .auth-submit-btn {
-      width: 100%;
-      margin-top: 0.5rem;
-      padding: 0.85rem;
-    }
-
-    .auth-alert {
-      padding: 0.75rem 1rem;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
-
-    .auth-alert.error {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-    }
-
-    .auth-alert.success {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      color: #86efac;
-    }
-
-    /* Modal Generic */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.78);
-      backdrop-filter: blur(10px);
-    }
-
-    .modal-dialog {
-      position: relative;
-      z-index: 10;
-      width: 90%;
-      max-width: 620px;
-      padding: 2.2rem;
-      background: #0f172a;
-      border-radius: 22px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1.2rem;
-    }
-
-    .ai-brand-title {
-      display: flex;
-      gap: 0.8rem;
-      align-items: center;
-    }
-
-    .ai-brand-title i {
-      font-size: 1.8rem;
-      color: #c4b5fd;
-    }
-
+    /* Modals Generic */
+    .modal { display: none; position: fixed; inset: 0; z-index: 2000; align-items: center; justify-content: center; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+    .modal-dialog { position: relative; z-index: 10; width: 90%; max-width: 620px; padding: 2.2rem; background: #0f172a; border-radius: 22px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+    .ai-brand-title { display: flex; gap: 0.8rem; align-items: center; }
+    .ai-brand-title i { font-size: 1.8rem; color: #c4b5fd; }
     .ai-brand-title h4 { font-size: 1.25rem; font-weight: 800; color: white; }
     .ai-brand-title span { font-size: 0.75rem; color: var(--text-dim); }
-
-    .close-modal-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.8rem;
-      cursor: pointer;
-    }
-
-    .modal-desc {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-
-    .quick-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .quick-chips span {
-      font-size: 0.75rem;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .quick-chips span:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    .ai-search-row {
-      display: flex;
-      gap: 0.6rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .ai-search-row input {
-      flex-grow: 1;
-      padding: 0.85rem 1rem;
-      background: #1e293b;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: white;
-      outline: none;
-    }
-
-    .assistant-result-box {
-      background: rgba(30, 41, 59, 0.75);
-      border: 1px solid rgba(139, 92, 246, 0.4);
-      border-radius: 14px;
-      padding: 1.2rem;
-      font-size: 0.9rem;
-    }
+    .close-modal-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+    .modal-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
+    .quick-chips span { font-size: 0.75rem; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
+    .quick-chips span:hover { background: var(--primary); color: white; }
+    .ai-search-row { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; }
+    .ai-search-row input { flex-grow: 1; padding: 0.85rem 1rem; background: #1e293b; border: 1px solid var(--border); border-radius: 12px; color: white; outline: none; }
+    .assistant-result-box { background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 14px; padding: 1.2rem; font-size: 0.9rem; }
 
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
-      padding: 3.5rem 1.5rem;
+      padding: 3rem 1.5rem;
       background: #04060c;
       margin-top: 5rem;
     }
@@ -1391,11 +800,6 @@
     .footer-brand p {
       color: var(--text-muted);
       font-size: 0.85rem;
-    }
-
-    .project-credit {
-      color: #60a5fa !important;
-      font-size: 0.85rem;
       margin-top: 0.2rem;
     }
 
@@ -1412,6 +816,7 @@
       .milestone-card { margin-left: 0; }
       .nav-links { display: none; }
       .footer-container { flex-direction: column; text-align: center; }
+      .sub-account-bar { justify-content: center; }
     }
   </style>
 </head>
@@ -1427,20 +832,28 @@
       <span><i class="fa-solid fa-sparkles"></i> <strong>Edutech 3D Academic Platform:</strong> Curated Lectures from Physics Wallah & Top Industry Mentors.</span>
     </div>
 
-    <!-- Navbar with 3D Navigation Links -->
+    <!-- Clean Top Navbar -->
     <header class="navbar">
       <div class="nav-container">
-        <div class="logo">
-          <div class="logo-box">
-            <i class="fa-solid fa-graduation-cap"></i>
+        <!-- Left Corner: Logo + AI Helper -->
+        <div class="nav-left-group">
+          <div class="logo">
+            <div class="logo-box">
+              <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="logo-title">
+              <span class="brand-name">EDU<span class="gradient-text">TECH</span></span>
+              <span class="brand-tag">3D LEARNING PATHWAY</span>
+            </div>
           </div>
-          <div class="logo-title">
-            <span class="brand-name">EDU<span class="gradient-text">TECH</span></span>
-            <span class="brand-tag">3D LEARNING PATHWAY</span>
-          </div>
+
+          <button class="ai-assistant-btn-left" onclick="openAssistantModal()">
+            <span class="pulse-dot"></span>
+            <i class="fa-solid fa-brain"></i> AI Prerequisite Helper
+          </button>
         </div>
 
-        <!-- 3D Interactive Nav Buttons -->
+        <!-- Center / Right: 3D Navigation Links -->
         <nav class="nav-links">
           <a href="#tracks" class="nav-btn-3d nav-btn-tracks active" onclick="navigateToSection3D('tracks', event)">
             <span class="nav-icon-wrap"><i class="fa-solid fa-crosshairs"></i></span>
@@ -1462,34 +875,40 @@
             <span>Resources</span>
           </a>
         </nav>
-
-        <div class="nav-actions">
-          <button class="ai-assistant-btn" onclick="openAssistantModal()">
-            <span class="pulse-dot"></span>
-            <i class="fa-solid fa-brain"></i> AI Prerequisite Helper
-          </button>
-
-          <button class="auth-nav-btn" id="authNavBtn" onclick="openAuthModal('login')">
-            <i class="fa-solid fa-right-to-bracket"></i> Login / Sign Up
-          </button>
-
-          <div class="user-profile-pill" id="userProfileNav" style="display: none;">
-            <div class="user-avatar" id="navUserAvatar">U</div>
-            <span class="user-name" id="navUserName">User</span>
-            <button class="logout-btn" onclick="logoutUser()" title="Logout">
-              <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
-          </div>
-        </div>
       </div>
     </header>
+
+    <!-- Sub-Navbar: Login & Dedicated Secure Admin Portal -->
+    <div class="sub-account-bar">
+      <div class="account-pill-card">
+        <span class="account-pill-text" id="accountStatusText"><i class="fa-solid fa-shield-halved"></i> Student Portal:</span>
+
+        <button class="auth-btn-styled" id="authNavBtn" onclick="openAuthModal('signup', false)">
+          <i class="fa-solid fa-user-plus"></i> Login / Sign Up
+        </button>
+
+        <!-- Secure Admin Portal Button -->
+        <button class="admin-nav-btn" id="adminNavBtn" onclick="openAdminModal()">
+          <i class="fa-solid fa-key"></i> Admin Access
+        </button>
+
+        <div class="user-profile-pill" id="userProfileNav" style="display: none;">
+          <div class="user-avatar" id="navUserAvatar">U</div>
+          <span class="user-name" id="navUserName">User</span>
+          <button class="logout-btn" onclick="logoutUser()" title="Logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero-content">
         <div class="badge-pill">
-          <i class="fa-solid fa-cube"></i> Interactive 3D Career Roadmaps • B.Sc. Computer Science
+          <i class="fa-solid fa-cube"></i> Interactive Career Roadmaps
         </div>
+
         <h1>From Confusion to Clarity:<br><span class="gradient-text">Structured Tech Roadmaps</span></h1>
         <p class="hero-subtitle">
           Milestone-based learning paths mapped with curated video lectures, interactive progress tracking, and AI prerequisite diagnostics.
@@ -1500,7 +919,7 @@
           <button class="btn secondary-btn" onclick="openAssistantModal()"><i class="fa-solid fa-wand-magic-sparkles"></i> Diagnose Stumbling Blocks</button>
         </div>
 
-        <!-- 3D Aesthetic Track Cards -->
+        <!-- 3D Track Cards -->
         <div class="track-visual-cards">
           <div class="visual-card" onclick="quickSelectTrack('web-dev')">
             <div class="card-img-wrap">
@@ -1555,7 +974,7 @@
       <div class="section-heading text-center">
         <span class="sub-badge">CORE CAPABILITIES</span>
         <h2>Engineered for Structured Learning Friction Elimination</h2>
-        <p>Project synopsis ke 5 main pillars jo learner ko complete end-to-end guidance provide karte hain:</p>
+        <p>Five core pillars providing comprehensive end-to-end guidance for self-paced learners:</p>
       </div>
 
       <div class="features-grid">
@@ -1568,7 +987,7 @@
             <span class="feat-number">01</span>
           </div>
           <h4>1. Dynamic Roadmap Generator</h4>
-          <p>Student ke current level aur target domain ke mutabiq step-by-step modular curriculum instant generate hota hai.</p>
+          <p>Instantly generates a step-by-step modular curriculum customized to the learner's current proficiency.</p>
           <div>
             <span class="feat-chip chip-cyan"><i class="fa-solid fa-network-wired"></i> Adaptive Nodes</span>
           </div>
@@ -1583,7 +1002,7 @@
             <span class="feat-number">02</span>
           </div>
           <h4>2. Smart Video Engine</h4>
-          <p>Random search khatam — har milestone direct high-yield YouTube & Physics Wallah lectures se mapped hai.</p>
+          <p>No more random search clutter — every single milestone is mapped directly to top-tier verified video lectures.</p>
           <div>
             <span class="feat-chip chip-red"><i class="fa-solid fa-play"></i> Top 1% Lectures</span>
           </div>
@@ -1598,7 +1017,7 @@
             <span class="feat-number">03</span>
           </div>
           <h4>3. Interactive Progress Tracker</h4>
-          <p>Visual animated progress bar, checklist state retention aur local memory auto-sync daily momentum banaye rakhta hai.</p>
+          <p>Visual progress meter, checklist state retention, and local memory synchronization keep study momentum consistent.</p>
           <div>
             <span class="feat-chip chip-green"><i class="fa-solid fa-arrows-rotate"></i> Auto-Sync State</span>
           </div>
@@ -1613,7 +1032,7 @@
             <span class="feat-number">04</span>
           </div>
           <h4>4. Curated Notes & Practice</h4>
-          <p>Handpicked PDF cheat sheets, reference documentations, aur Blind 75 / LeetCode coding problem sheets ek click par.</p>
+          <p>Direct access to downloadable PDF cheatsheets, MDN reference docs, and curated Blind 75 / LeetCode problem sets.</p>
           <div>
             <span class="feat-chip chip-amber"><i class="fa-solid fa-file-code"></i> Verified Vault</span>
           </div>
@@ -1628,7 +1047,7 @@
             <span class="feat-number">05</span>
           </div>
           <h4>5. AI Prerequisite Assistant</h4>
-          <p>Agar learner kisi concept me atak raha hai, toh AI system foundation stumbling blocks diagnose karke zaroori basic video recommend karta hai.</p>
+          <p>Diagnoses conceptual bottlenecks and recommends prerequisite foundation lectures if a learner gets stuck.</p>
           <div>
             <span class="feat-chip chip-purple"><i class="fa-solid fa-microchip"></i> Neural Diagnostic</span>
           </div>
@@ -1641,7 +1060,7 @@
       <div class="glass-panel track-dashboard">
         <div class="track-header">
           <h2><i class="fa-solid fa-sliders"></i> Select Your Learning Track</h2>
-          <p class="subtitle">Apna domain switch karein aur customized roadmap explore karein:</p>
+          <p class="subtitle">Switch domains and explore customized structured pathways:</p>
         </div>
 
         <form id="roadmapForm" class="filter-controls">
@@ -1732,8 +1151,8 @@
     <section id="resources" class="container">
       <div class="section-heading">
         <span class="sub-badge">VERIFIED VAULT</span>
-        <h2>Resource Curated Hub (Notes & Practice)</h2>
-        <p>Direct download links aur coding practice portals bina internet distraction ke:</p>
+        <h2>Curated Resource Vault (Notes & Practice)</h2>
+        <p>Direct reference documentation links and coding practice portals without web distractions:</p>
       </div>
 
       <div class="resources-grid">
@@ -1741,7 +1160,7 @@
           <div class="res-tag">HANDWRITTEN CHEATSHEET</div>
           <div class="res-icon-wrap"><i class="fa-brands fa-node-js"></i></div>
           <h4>Full-Stack MERN Architecture Cheatsheet</h4>
-          <p>ES6 JavaScript syntax, React State Management, Express REST routing, aur MongoDB queries ek summary doc me.</p>
+          <p>Comprehensive summary covering ES6 JavaScript syntax, React State Management, Express REST routing, and MongoDB queries.</p>
           <a href="https://developer.mozilla.org" target="_blank" class="res-action-btn">
             <span>Open Guide</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -1751,7 +1170,7 @@
           <div class="res-tag">INTERVIEW PROBLEM SHEET</div>
           <div class="res-icon-wrap"><i class="fa-solid fa-code"></i></div>
           <h4>Blind 75 & SDE Placement Problems</h4>
-          <p>Top companies me puche jane wale dynamic programming, graphs, aur binary search patterns ka complete set.</p>
+          <p>Standard question patterns from top placement interview sheets covering dynamic programming, graphs, and binary search.</p>
           <a href="https://leetcode.com" target="_blank" class="res-action-btn">
             <span>Solve Questions</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -1761,7 +1180,7 @@
           <div class="res-tag">SYSTEM DESIGN</div>
           <div class="res-icon-wrap"><i class="fa-solid fa-network-wired"></i></div>
           <h4>Scalable Architecture & API Primer</h4>
-          <p>Caching with Redis, Database Sharding, Load Balancers, aur Microservices architecture ke detailed notes.</p>
+          <p>Detailed notes covering Redis caching, database sharding, load balancers, and scalable system design.</p>
           <a href="https://bytebytego.com" target="_blank" class="res-action-btn">
             <span>Read Architecture</span> <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -1769,33 +1188,37 @@
       </div>
     </section>
 
-    <!-- Auth Modal -->
+    <!-- User Auth Modal -->
     <div id="authModal" class="modal">
-      <div class="modal-backdrop" onclick="closeAuthModal()"></div>
+      <div class="modal-backdrop" id="authBackdrop" onclick="handleBackdropClick()"></div>
       <div class="modal-dialog glass-panel auth-dialog">
         <div class="modal-header">
           <div class="ai-brand-title">
             <i class="fa-solid fa-user-shield"></i>
             <div>
-              <h4 id="authModalTitle">Student Portal</h4>
-              <span>Login or Create an Account to save progress</span>
+              <h4 id="authModalTitle">Welcome to Edutech</h4>
+              <span id="authModalSub">Create a Free Account to unlock interactive 3D roadmaps</span>
             </div>
           </div>
-          <button class="close-modal-btn" onclick="closeAuthModal()">&times;</button>
+          <button class="close-modal-btn" id="authCloseBtn" onclick="closeAuthModal()">&times;</button>
+        </div>
+
+        <div id="gateNoticeBanner" style="display:none; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 10px; padding: 0.6rem 0.9rem; font-size: 0.82rem; color: #93c5fd; margin-bottom: 1rem;">
+          <i class="fa-solid fa-circle-info"></i> Please create a free account or login to track your learning journey and save progress.
         </div>
 
         <div class="auth-tabs">
-          <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">
+          <button class="auth-tab-btn" id="tabLoginBtn" onclick="switchAuthTab('login')">
             <i class="fa-solid fa-lock"></i> Sign In
           </button>
-          <button class="auth-tab-btn" id="tabSignupBtn" onclick="switchAuthTab('signup')">
+          <button class="auth-tab-btn active" id="tabSignupBtn" onclick="switchAuthTab('signup')">
             <i class="fa-solid fa-user-plus"></i> Create Account
           </button>
         </div>
 
         <div id="authAlert" class="auth-alert" style="display: none;"></div>
 
-        <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+        <form id="loginForm" class="auth-form" style="display: none;" onsubmit="handleLogin(event)">
           <div class="form-field">
             <label><i class="fa-regular fa-envelope"></i> Email Address</label>
             <input type="email" id="loginEmail" placeholder="student@example.com" required>
@@ -1805,14 +1228,14 @@
             <input type="password" id="loginPassword" placeholder="••••••••" required>
           </div>
           <button type="submit" class="btn primary-btn glow-btn auth-submit-btn">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Account
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Platform
           </button>
         </form>
 
-        <form id="signupForm" class="auth-form" style="display: none;" onsubmit="handleSignup(event)">
+        <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
           <div class="form-field">
             <label><i class="fa-regular fa-user"></i> Full Name</label>
-            <input type="text" id="signupName" placeholder="e.g. Roshan Yadav" required>
+            <input type="text" id="signupName" placeholder="e.g. Alex Sharma" required>
           </div>
           <div class="form-field">
             <label><i class="fa-regular fa-envelope"></i> Email Address</label>
@@ -1831,13 +1254,120 @@
             </select>
           </div>
           <button type="submit" class="btn primary-btn glow-btn auth-submit-btn">
-            <i class="fa-solid fa-user-check"></i> Register Account
+            <i class="fa-solid fa-user-check"></i> Create Free Student Account
           </button>
         </form>
       </div>
     </div>
 
-    <!-- AI Modal -->
+    <!-- 2-FACTOR SECURE ADMIN MODAL (NO OPEN BYPASS) -->
+    <div id="adminModal" class="modal">
+      <div class="modal-backdrop" onclick="closeAdminModal()"></div>
+      <div class="modal-dialog glass-panel" style="max-width: 540px;">
+        <div class="modal-header">
+          <div class="ai-brand-title">
+            <i class="fa-solid fa-lock" style="color: #c084fc;"></i>
+            <div>
+              <h4 style="color: white; font-size: 1.25rem;">Encrypted Admin Portal</h4>
+              <span style="color: var(--text-dim); font-size: 0.75rem;">Two-Factor Security Authentication</span>
+            </div>
+          </div>
+          <button class="close-modal-btn" onclick="closeAdminModal()">&times;</button>
+        </div>
+
+        <!-- 1. Secure Admin Login Form -->
+        <div id="adminLoginSection">
+          <p class="modal-desc">Enter your verified Master Security Key and 6-Digit PIN. Unauthorized access attempts are monitored and rate-limited.</p>
+          
+          <div id="adminAlert" class="auth-alert error" style="display: none;"></div>
+
+          <form onsubmit="handleSecureAdminLogin(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="form-field">
+              <label><i class="fa-solid fa-shield-halved"></i> Master Security Key</label>
+              <input type="password" id="adminSecretKeyInput" placeholder="Enter Master Security Key" required autocomplete="off">
+            </div>
+
+            <div class="form-field">
+              <label><i class="fa-solid fa-hashtag"></i> 6-Digit Security PIN</label>
+              <input type="password" id="adminPinInput" placeholder="••••••" maxlength="6" pattern="[0-9]{6}" required autocomplete="off">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.4rem;">
+              <span id="attemptWarning" style="font-size: 0.76rem; color: #fca5a5;">Attempts remaining: 3</span>
+              <span style="font-size: 0.74rem; color: var(--text-dim);"><i class="fa-solid fa-fingerprint"></i> Anti-Brute Force Protection</span>
+            </div>
+
+            <button type="submit" class="btn primary-btn glow-btn" style="width: 100%; margin-top: 0.5rem; justify-content: center;">
+              <i class="fa-solid fa-key"></i> Authenticate & Unlock System
+            </button>
+          </form>
+        </div>
+
+        <!-- 2. Secure Admin Control Dashboard -->
+        <div id="adminDashboardSection" style="display: none;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1.2rem;">
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; text-align: center;">
+              <span style="font-size: 1.5rem; font-weight: 800; color: #60a5fa;" id="adminStatUsers">1</span>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Registered Users</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; text-align: center;">
+              <span style="font-size: 1.5rem; font-weight: 800; color: #34d399;" id="adminStatMilestones">0</span>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Milestones Done</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; text-align: center;">
+              <span style="font-size: 1.3rem; font-weight: 800; color: #c084fc;"><i class="fa-solid fa-user-shield"></i> Verified</span>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Root Admin</p>
+            </div>
+          </div>
+
+          <!-- Gate Switch -->
+          <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong style="font-size: 0.86rem; color: white;">Mandatory Visitor Gate:</strong>
+              <p style="font-size: 0.75rem; color: var(--text-muted);">Force users to register after 2 clicks</p>
+            </div>
+            <button id="gateToggleBtn" class="btn" style="padding: 0.35rem 0.85rem; font-size: 0.78rem; background: #10b981; color: white;" onclick="toggleVisitorGate()">
+              Status: ENABLED
+            </button>
+          </div>
+
+          <!-- Update Security Key Form (Inside Dashboard) -->
+          <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1.2rem;">
+            <strong style="font-size: 0.82rem; color: #c084fc; display: block; margin-bottom: 0.6rem;">
+              <i class="fa-solid fa-gear"></i> Update Master Security Credentials:
+            </strong>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
+              <input type="password" id="newMasterKeyInput" placeholder="New Master Key" style="padding: 0.5rem; background: #111827; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 0.8rem; outline: none;">
+              <input type="password" id="newMasterPinInput" placeholder="New 6-Digit PIN" maxlength="6" style="padding: 0.5rem; background: #111827; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 0.8rem; outline: none;">
+            </div>
+            <button class="btn primary-btn" style="padding: 0.4rem 0.8rem; font-size: 0.76rem; width: 100%; justify-content: center;" onclick="updateAdminCredentials()">
+              Save New Credentials
+            </button>
+            <span id="credUpdateAlert" style="font-size: 0.72rem; color: #86efac; display: none; margin-top: 0.4rem; display: block;"></span>
+          </div>
+
+          <!-- Registered Users Roster -->
+          <div style="margin-bottom: 1.2rem;">
+            <strong style="font-size: 0.8rem; color: #cbd5e1; display: block; margin-bottom: 0.4rem;">
+              <i class="fa-solid fa-users"></i> Platform User Registry:
+            </strong>
+            <div id="adminUserList" style="max-height: 100px; overflow-y: auto; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem;">
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 1rem;">
+            <button class="btn secondary-btn" style="font-size: 0.8rem; padding: 0.45rem 0.9rem;" onclick="exitAdminMode()">
+              <i class="fa-solid fa-arrow-right-from-bracket"></i> Lock & Log Out
+            </button>
+            <button class="btn primary-btn" style="font-size: 0.8rem; padding: 0.45rem 0.9rem;" onclick="closeAdminModal()">
+              <i class="fa-solid fa-check"></i> Done
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Assistant Modal -->
     <div id="aiModal" class="modal">
       <div class="modal-backdrop" onclick="closeAssistantModal()"></div>
       <div class="modal-dialog glass-panel">
@@ -1853,8 +1383,8 @@
         </div>
 
         <div class="modal-body">
-          <p class="modal-desc">
-            Agar aap kisi specific topic me phas gaye hain (jaise <em>React State</em>, <em>Recursion</em>, <em>Express APIs</em>), yahan enter karein:
+          <p class="modal-desc" id="aiModalDesc">
+            If you feel stuck on any programming concept (e.g. <em>React State</em>, <em>Recursion</em>, <em>Express APIs</em>), enter the topic below:
           </p>
 
           <div class="quick-chips">
@@ -1865,7 +1395,7 @@
           </div>
 
           <div class="ai-search-row">
-            <input type="text" id="assistantInput" placeholder="Ex: React props drilling / Recursion / MongoDB">
+            <input type="text" id="assistantInput" placeholder="Ex: React Props Drilling / Recursion / MongoDB">
             <button class="btn primary-btn" onclick="queryAIAssistant()"><i class="fa-solid fa-wand-magic-sparkles"></i> Diagnose</button>
           </div>
 
@@ -1874,16 +1404,15 @@
       </div>
     </div>
 
-    <!-- Footer -->
+    <!-- Clean Footer -->
     <footer>
       <div class="footer-container">
         <div class="footer-brand">
           <span class="footer-logo">EDU<span class="gradient-text">TECH</span></span>
           <p>AI-Powered Career Roadmap & Curated Video Learning Platform</p>
-          <p class="project-credit">Designed & Developed by <strong>Roshan Yadav</strong> | B.Sc. Computer Science (Final Year)</p>
         </div>
         <div class="footer-rights">
-          &copy; 2026 EDUTECH Project. All educational content curated for academic study.
+          &copy; 2026 EDUTECH Platform. All educational content curated for academic learning.
         </div>
       </div>
     </footer>
@@ -1892,4 +1421,4 @@
 
   <script src="app.js"></script>
 </body>
-</html>
+</html>``
