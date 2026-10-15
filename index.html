@@ -31,6 +31,7 @@
       --cyan-accent: #06b6d4;
       --success: #10b981;
       --error: #ef4444;
+      --gold: #f59e0b;
       
       --border: rgba(255, 255, 255, 0.09);
       --text-main: #f8fafc;
@@ -688,6 +689,67 @@
     .filter-item select { width: 100%; padding: 0.85rem 1rem; background: #111827; border: 1px solid var(--border); border-radius: 12px; color: white; font-size: 0.95rem; outline: none; cursor: pointer; }
     .filter-item select:focus { border-color: var(--primary); }
 
+    /* Pomodoro Timer Bar */
+    .pomodoro-card {
+      background: linear-gradient(135deg, rgba(30, 27, 75, 0.7), rgba(15, 23, 42, 0.9));
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 16px;
+      padding: 1rem 1.4rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .pomo-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .pomo-badge {
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.5);
+      color: #c084fc;
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .pomo-display {
+      font-family: var(--font-mono);
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 15px rgba(139, 92, 246, 0.6);
+    }
+
+    .pomo-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .pomo-btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .pomo-btn:hover { background: var(--primary); }
+    .pomo-btn.active { background: #10b981; border-color: #10b981; }
+
     /* Progress Box */
     .progress-card { padding: 2.2rem; border-left: 5px solid var(--success); margin-bottom: 1.8rem; }
     .progress-details { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
@@ -702,6 +764,21 @@
     .progress-meta-info { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.8rem; }
     .streak-badge { background: rgba(249, 115, 22, 0.15); color: #fb923c; padding: 0.25rem 0.75rem; border-radius: 20px; font-weight: 600; }
     .autosave-tag { color: var(--text-dim); font-size: 0.8rem; }
+
+    /* Certificate Claim Banner */
+    .certificate-claim-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 70, 239, 0.2));
+      border: 1px solid var(--gold);
+      border-radius: 12px;
+      padding: 0.85rem 1.2rem;
+      margin-top: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
 
     .timeline-search-bar { display: flex; align-items: center; gap: 0.8rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border); padding: 0.85rem 1.2rem; border-radius: 12px; margin-bottom: 2rem; }
     .timeline-search-bar i { color: var(--text-dim); }
@@ -722,13 +799,119 @@
     .milestone-duration { font-size: 0.8rem; color: var(--text-muted); background: rgba(255, 255, 255, 0.05); padding: 0.3rem 0.8rem; border-radius: 20px; border: 1px solid var(--border); }
     .prereq-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 1.2rem; }
     .prereq-pill { font-size: 0.75rem; background: rgba(245, 158, 11, 0.12); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.25); padding: 0.25rem 0.7rem; border-radius: 20px; font-weight: 600; }
+    
     .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.8rem; }
     .video-item { background: rgba(15, 23, 42, 0.65); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; display: flex; flex-direction: column; justify-content: space-between; }
     .video-info h5 { font-size: 0.94rem; font-weight: 600; margin-bottom: 0.4rem; }
     .video-creator { font-size: 0.8rem; color: #60a5fa; font-weight: 600; }
     .video-duration { font-size: 0.75rem; color: var(--text-dim); }
-    .watch-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 0.9rem; padding: 0.55rem 1rem; background: #dc2626; color: white; text-decoration: none; font-size: 0.82rem; border-radius: 8px; font-weight: 600; transition: all 0.2s; }
-    .watch-btn:hover { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+    
+    /* In-Website Video Watch Button */
+    .watch-modal-btn { 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 0.5rem; 
+      margin-top: 0.9rem; 
+      padding: 0.55rem 1rem; 
+      background: linear-gradient(135deg, #dc2626, #b91c1c); 
+      color: white; 
+      border: none;
+      font-size: 0.82rem; 
+      border-radius: 8px; 
+      font-weight: 700; 
+      cursor: pointer;
+      transition: all 0.2s; 
+    }
+    .watch-modal-btn:hover { 
+      background: #ef4444; 
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); 
+      transform: translateY(-1px);
+    }
+
+    /* Milestone Interactive Extras: Quiz & Notes */
+    .milestone-extras-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .extra-action-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .extra-action-btn:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+
+    /* Collapsible Quiz & Notes Container */
+    .milestone-quiz-box, .milestone-notes-box {
+      display: none;
+      background: rgba(10, 15, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.1rem;
+      margin-top: 0.8rem;
+    }
+
+    .quiz-question-item {
+      margin-bottom: 0.9rem;
+    }
+    .quiz-q-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.5rem;
+    }
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .quiz-opt-btn {
+      text-align: left;
+      padding: 0.45rem 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: #94a3b8;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quiz-opt-btn:hover { background: rgba(59, 130, 246, 0.15); color: white; }
+    .quiz-opt-btn.correct { background: rgba(16, 185, 129, 0.25) !important; border-color: #10b981 !important; color: #86efac !important; }
+    .quiz-opt-btn.wrong { background: rgba(239, 68, 68, 0.25) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+
+    .milestone-notes-textarea {
+      width: 100%;
+      height: 80px;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: white;
+      padding: 0.6rem;
+      font-size: 0.82rem;
+      resize: vertical;
+      outline: none;
+    }
+    .notes-save-status {
+      font-size: 0.72rem;
+      color: #10b981;
+      margin-top: 0.3rem;
+      display: block;
+    }
 
     /* Resources Grid */
     .resources-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -739,7 +922,112 @@
     .res-card p { font-size: 0.88rem; color: var(--text-muted); flex-grow: 1; margin-bottom: 1.4rem; }
     .res-action-btn { color: #60a5fa; text-decoration: none; font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; }
 
-    /* Auth Modal */
+    /* Modals Generic */
+    .modal { display: none; position: fixed; inset: 0; z-index: 2000; align-items: center; justify-content: center; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
+    .modal-dialog { position: relative; z-index: 10; width: 90%; max-width: 620px; padding: 2.2rem; background: #0f172a; border-radius: 22px; }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+    .ai-brand-title { display: flex; gap: 0.8rem; align-items: center; }
+    .ai-brand-title i { font-size: 1.8rem; color: #c4b5fd; }
+    .ai-brand-title h4 { font-size: 1.25rem; font-weight: 800; color: white; }
+    .ai-brand-title span { font-size: 0.75rem; color: var(--text-dim); }
+    .close-modal-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
+    .modal-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+    /* Video Player Modal Specific */
+    .video-dialog {
+      max-width: 820px;
+      padding: 1.2rem;
+    }
+    .video-iframe-wrap {
+      width: 100%;
+      height: 440px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .video-iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Certificate Modal & Design */
+    .cert-dialog {
+      max-width: 760px;
+      padding: 1.8rem;
+    }
+    .certificate-sheet {
+      background: radial-gradient(circle at center, #1e1b4b 0%, #090d1a 100%);
+      border: 6px double #f59e0b;
+      border-radius: 14px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 40px rgba(245, 158, 11, 0.25);
+    }
+    .cert-ribbon {
+      font-size: 2.4rem;
+      color: #f59e0b;
+      margin-bottom: 0.5rem;
+    }
+    .cert-title {
+      font-size: 1.85rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #ffffff;
+      text-transform: uppercase;
+      font-family: var(--font-main);
+    }
+    .cert-sub {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+    }
+    .cert-recipient {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #60a5fa;
+      border-bottom: 2px solid rgba(96, 165, 250, 0.4);
+      display: inline-block;
+      padding: 0 2rem 0.3rem;
+      margin-bottom: 1rem;
+      font-family: var(--font-main);
+    }
+    .cert-track-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #34d399;
+      margin-bottom: 1.5rem;
+    }
+    .cert-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 2rem;
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      padding-top: 1.2rem;
+    }
+    .cert-signature-box {
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+    .cert-id-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #f59e0b;
+    }
+
+    /* Confetti Canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3000;
+    }
+
+    /* Auth Dialog Tabs */
     .auth-dialog { max-width: 480px; }
     .auth-tabs { display: flex; gap: 0.5rem; background: rgba(15, 23, 42, 0.85); padding: 0.35rem; border-radius: 12px; margin-bottom: 1.5rem; border: 1px solid var(--border); }
     .auth-tab-btn { flex: 1; padding: 0.65rem; border-radius: 8px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.88rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
@@ -754,24 +1042,6 @@
     .auth-alert.error { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; }
     .auth-alert.success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #86efac; }
 
-    /* Modals Generic */
-    .modal { display: none; position: fixed; inset: 0; z-index: 2000; align-items: center; justify-content: center; }
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); }
-    .modal-dialog { position: relative; z-index: 10; width: 90%; max-width: 620px; padding: 2.2rem; background: #0f172a; border-radius: 22px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
-    .ai-brand-title { display: flex; gap: 0.8rem; align-items: center; }
-    .ai-brand-title i { font-size: 1.8rem; color: #c4b5fd; }
-    .ai-brand-title h4 { font-size: 1.25rem; font-weight: 800; color: white; }
-    .ai-brand-title span { font-size: 0.75rem; color: var(--text-dim); }
-    .close-modal-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; }
-    .modal-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
-    .quick-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.2rem; }
-    .quick-chips span { font-size: 0.75rem; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 20px; cursor: pointer; transition: all 0.2s; }
-    .quick-chips span:hover { background: var(--primary); color: white; }
-    .ai-search-row { display: flex; gap: 0.6rem; margin-bottom: 1.2rem; }
-    .ai-search-row input { flex-grow: 1; padding: 0.85rem 1rem; background: #1e293b; border: 1px solid var(--border); border-radius: 12px; color: white; outline: none; }
-    .assistant-result-box { background: rgba(30, 41, 59, 0.75); border: 1px solid rgba(139, 92, 246, 0.4); border-radius: 14px; padding: 1.2rem; font-size: 0.9rem; }
-
     /* Footer */
     footer {
       border-top: 1px solid var(--border);
@@ -779,7 +1049,6 @@
       background: #04060c;
       margin-top: 5rem;
     }
-
     .footer-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -789,28 +1058,11 @@
       flex-wrap: wrap;
       gap: 1.5rem;
     }
+    .footer-logo { font-size: 1.4rem; font-weight: 800; display: block; color: white; }
+    .footer-brand p { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+    .footer-rights { color: var(--text-dim); font-size: 0.78rem; }
 
-    .footer-logo {
-      font-size: 1.4rem;
-      font-weight: 800;
-      display: block;
-      color: white;
-    }
-
-    .footer-brand p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 0.2rem;
-    }
-
-    .footer-rights {
-      color: var(--text-dim);
-      font-size: 0.78rem;
-    }
-
-    /* =========================================================
-       100% PERFECT MOBILE RESPONSIVE FIX (PHONE VIEW)
-       ========================================================= */
+    /* Mobile Responsive View */
     @media (max-width: 820px) {
       .hero h1 { font-size: 2.1rem; }
       .filter-controls { grid-template-columns: 1fr; }
@@ -819,8 +1071,9 @@
       .milestone-card { margin-left: 0; }
       .footer-container { flex-direction: column; text-align: center; }
       .sub-account-bar { justify-content: center; }
+      .video-iframe-wrap { height: 260px; }
+      .quiz-options { grid-template-columns: 1fr; }
 
-      /* Mobile Navigation Bar */
       .nav-container {
         flex-direction: column;
         align-items: stretch;
@@ -843,14 +1096,8 @@
         padding: 0.35rem 0.4rem;
         scrollbar-width: none;
       }
-      .nav-links::-webkit-scrollbar {
-        display: none;
-      }
-      .nav-btn-3d {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-        flex-shrink: 0;
-      }
+      .nav-links::-webkit-scrollbar { display: none; }
+      .nav-btn-3d { padding: 0.4rem 0.8rem; font-size: 0.8rem; flex-shrink: 0; }
     }
   </style>
 </head>
@@ -858,6 +1105,9 @@
 
   <!-- Background 3D Particles Canvas -->
   <canvas id="webgl-3d-canvas"></canvas>
+
+  <!-- Confetti Canvas for 100% Milestone Completion -->
+  <canvas id="confettiCanvas"></canvas>
 
   <div class="app-wrapper">
 
@@ -869,7 +1119,7 @@
     <!-- Clean Top Navbar -->
     <header class="navbar">
       <div class="nav-container">
-        <!-- Left Corner: Logo + AI Helper -->
+        <!-- Left: Logo + AI Helper -->
         <div class="nav-left-group">
           <div class="logo">
             <div class="logo-box">
@@ -887,7 +1137,7 @@
           </button>
         </div>
 
-        <!-- Center / Right: 3D Navigation Links (Fully Visible on Desktop & Mobile) -->
+        <!-- Right: 3D Navigation Links -->
         <nav class="nav-links">
           <a href="#tracks" class="nav-btn-3d nav-btn-tracks active" onclick="navigateToSection3D('tracks', event)">
             <span class="nav-icon-wrap"><i class="fa-solid fa-crosshairs"></i></span>
@@ -1034,10 +1284,10 @@
             </div>
             <span class="feat-number">02</span>
           </div>
-          <h4>2. Smart Video Engine</h4>
-          <p>No more random search clutter — every single milestone is mapped directly to top-tier verified video lectures.</p>
+          <h4>2. Smart In-Website Player</h4>
+          <p>Watch curated top-tier lectures inside the platform without external website redirects or distractions.</p>
           <div>
-            <span class="feat-chip chip-red"><i class="fa-solid fa-play"></i> Top 1% Lectures</span>
+            <span class="feat-chip chip-red"><i class="fa-solid fa-play"></i> Zero Redirection</span>
           </div>
         </div>
 
@@ -1049,10 +1299,10 @@
             </div>
             <span class="feat-number">03</span>
           </div>
-          <h4>3. Interactive Progress Tracker</h4>
-          <p>Visual progress meter, checklist state retention, and local memory synchronization keep study momentum consistent.</p>
+          <h4>3. Certificate & Progress Tracker</h4>
+          <p>Earn an automated verified academic certificate upon reaching 100% curriculum milestone checklist.</p>
           <div>
-            <span class="feat-chip chip-green"><i class="fa-solid fa-arrows-rotate"></i> Auto-Sync State</span>
+            <span class="feat-chip chip-green"><i class="fa-solid fa-certificate"></i> Verified Credential</span>
           </div>
         </div>
 
@@ -1064,10 +1314,10 @@
             </div>
             <span class="feat-number">04</span>
           </div>
-          <h4>4. Curated Notes & Practice</h4>
-          <p>Direct access to downloadable PDF cheatsheets, MDN reference docs, and curated Blind 75 / LeetCode problem sets.</p>
+          <h4>4. Quizzes & Live Scratchpad</h4>
+          <p>Interactive milestone MCQs and auto-saving personal notepad to jot code snippets and important notes.</p>
           <div>
-            <span class="feat-chip chip-amber"><i class="fa-solid fa-file-code"></i> Verified Vault</span>
+            <span class="feat-chip chip-amber"><i class="fa-solid fa-pen-to-square"></i> Integrated Notes</span>
           </div>
         </div>
 
@@ -1145,6 +1395,22 @@
 
     <!-- Progress Bar & Milestones Timeline (Roadmap) -->
     <section id="roadmap-section" class="container">
+
+      <!-- Built-in Pomodoro Focus Timer -->
+      <div class="pomodoro-card">
+        <div class="pomo-left">
+          <span class="pomo-badge"><i class="fa-solid fa-stopwatch"></i> FOCUS TIMER</span>
+          <span class="pomo-display" id="pomoTimerDisplay">25:00</span>
+          <span id="pomoModeLabel" style="font-size: 0.8rem; color: #a78bfa; font-weight: 600;">Deep Focus Session</span>
+        </div>
+        <div class="pomo-controls">
+          <button class="pomo-btn" id="pomoStartBtn" onclick="togglePomodoro()"><i class="fa-solid fa-play"></i> Start</button>
+          <button class="pomo-btn" onclick="resetPomodoro()"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+          <button class="pomo-btn" onclick="switchPomodoroMode()"><i class="fa-solid fa-mug-hot"></i> Switch Mode</button>
+        </div>
+      </div>
+
+      <!-- Main Progress Card -->
       <div class="glass-panel progress-card" id="progressBox">
         <div class="progress-details">
           <div>
@@ -1166,6 +1432,17 @@
           <span id="completionStatus"><i class="fa-solid fa-spinner fa-spin"></i> Initializing tracker...</span>
           <span class="streak-badge"><i class="fa-solid fa-fire"></i> Study Streak: 3 Days Active</span>
           <span class="autosave-tag"><i class="fa-solid fa-cloud"></i> Saved in Local Storage</span>
+        </div>
+
+        <!-- Certificate Claim Banner (Shown upon reaching 100%) -->
+        <div id="certClaimBanner" class="certificate-claim-banner">
+          <div>
+            <strong style="color: #fde68a; font-size: 0.92rem;"><i class="fa-solid fa-award"></i> Congratulations! Track 100% Completed!</strong>
+            <p style="color: #cbd5e1; font-size: 0.78rem;">Your verified credential of course mastery is ready for generation.</p>
+          </div>
+          <button class="btn primary-btn" style="padding: 0.45rem 1rem; font-size: 0.82rem; background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="openCertificateModal()">
+            <i class="fa-solid fa-certificate"></i> View & Claim Certificate
+          </button>
         </div>
       </div>
 
@@ -1220,6 +1497,62 @@
         </div>
       </div>
     </section>
+
+    <!-- IN-WEBSITE VIDEO PLAYER MODAL -->
+    <div id="videoModal" class="modal">
+      <div class="modal-backdrop" onclick="closeVideoModal()"></div>
+      <div class="modal-dialog glass-panel video-dialog">
+        <div class="modal-header">
+          <div class="ai-brand-title">
+            <i class="fa-brands fa-youtube" style="color: #ef4444;"></i>
+            <div>
+              <h4 id="videoModalTitle">Curated Lecture Video</h4>
+              <span id="videoModalCreator" style="color: var(--text-dim);">Physics Wallah Mentors</span>
+            </div>
+          </div>
+          <button class="close-modal-btn" onclick="closeVideoModal()">&times;</button>
+        </div>
+        <div class="video-iframe-wrap">
+          <iframe id="videoPlayerIframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- COURSE COMPLETION CERTIFICATE MODAL -->
+    <div id="certificateModal" class="modal">
+      <div class="modal-backdrop" onclick="closeCertificateModal()"></div>
+      <div class="modal-dialog glass-panel cert-dialog">
+        <div class="modal-header" style="margin-bottom: 0.6rem;">
+          <h4 style="color: #fde68a;"><i class="fa-solid fa-award"></i> Verified Credential</h4>
+          <button class="close-modal-btn" onclick="closeCertificateModal()">&times;</button>
+        </div>
+
+        <div class="certificate-sheet" id="printableCertificate">
+          <div class="cert-ribbon"><i class="fa-solid fa-award"></i></div>
+          <h2 class="cert-title">Certificate of Completion</h2>
+          <p class="cert-sub">This is proudly and academically presented to</p>
+          <div class="cert-recipient" id="certStudentName">Alex Sharma</div>
+          <p class="cert-sub" style="margin-top: 0.8rem;">for successfully completing all curriculum milestones in</p>
+          <div class="cert-track-name" id="certCourseTrack">Full-Stack Web Development (MERN)</div>
+          
+          <div class="cert-footer-row">
+            <div class="cert-signature-box">
+              <strong style="color: white; display:block;">Edutech Academic Council</strong>
+              <span>Verified Digital Credential</span>
+            </div>
+            <div class="cert-id-tag">
+              <div>DATE: <span id="certIssueDate">15-Oct-2026</span></div>
+              <div>ID: <span id="certUniqueID">EDU-2026-X89F</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem;">
+          <button class="btn secondary-btn" onclick="closeCertificateModal()"><i class="fa-solid fa-xmark"></i> Close</button>
+          <button class="btn primary-btn glow-btn" onclick="printCertificate()"><i class="fa-solid fa-print"></i> Print / Save as PDF</button>
+        </div>
+      </div>
+    </div>
 
     <!-- User Auth Modal -->
     <div id="authModal" class="modal">
@@ -1308,7 +1641,6 @@
           <button class="close-modal-btn" onclick="closeAdminModal()">&times;</button>
         </div>
 
-        <!-- Mode Switcher Tabs (Login vs Set Custom PIN) -->
         <div style="display: flex; gap: 0.5rem; background: rgba(15, 23, 42, 0.85); padding: 0.3rem; border-radius: 10px; margin-bottom: 1.2rem; border: 1px solid var(--border);">
           <button id="adminTabLoginBtn" class="auth-tab-btn active" onclick="switchAdminPortalTab('login')">
             <i class="fa-solid fa-key"></i> Unlock Portal
@@ -1381,7 +1713,6 @@
             </div>
           </div>
 
-          <!-- Gate Switch -->
           <div style="background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem; margin-bottom: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
             <div>
               <strong style="font-size: 0.86rem; color: white;">2-Click Mandatory Visitor Gate:</strong>
@@ -1458,4 +1789,4 @@
 
   <script src="app.js"></script>
 </body>
-</html> 
+</html>
