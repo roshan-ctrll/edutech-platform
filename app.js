@@ -29,154 +29,144 @@ let pomodoroRunning = false;
 let pomodoroIsBreak = false;
 
 // =========================================================
-// 100% VERIFIED HIGH-VIEW YOUTUBE VIDEO LIBRARY
-// Multi-Million Views, Official Channels (freeCodeCamp, Mosh, Web Dev Simplified, Abdul Bari)
+// GUARANTEED FALLBACK ROADMAPS (Video section kabhi gayab nahi hoga)
+// =========================================================
+const DEFAULT_ROADMAPS = {
+  'web-dev': {
+    domain: "Full-Stack Web Development (MERN)",
+    description: "Step-by-step pathway from responsive frontend design to scalable backend architecture.",
+    milestones: [
+      {
+        id: 'm1',
+        step: 1,
+        title: "HTML5, Modern CSS & Responsive Layouts",
+        duration: "1-2 Weeks",
+        prerequisites: ["Web Basics", "Text Editor (VS Code)", "Chrome DevTools"]
+      },
+      {
+        id: 'm2',
+        step: 2,
+        title: "JavaScript ES6+, DOM & Async Logic",
+        duration: "2-3 Weeks",
+        prerequisites: ["HTML/CSS", "Programming Basics", "Functions & Scope"]
+      },
+      {
+        id: 'm3',
+        step: 3,
+        title: "React.js Component Architecture & Hooks",
+        duration: "3-4 Weeks",
+        prerequisites: ["Modern JS (ES6)", "DOM Manipulation", "Array Methods (Map/Filter)"]
+      },
+      {
+        id: 'm4',
+        step: 4,
+        title: "Node.js, Express & RESTful APIs",
+        duration: "2-3 Weeks",
+        prerequisites: ["JavaScript Async/Await", "HTTP Methods", "JSON Basics"]
+      },
+      {
+        id: 'm5',
+        step: 5,
+        title: "MongoDB & Database Modeling",
+        duration: "2 Weeks",
+        prerequisites: ["Node.js Basics", "CRUD Operations", "Data Structures"]
+      }
+    ]
+  },
+  'data-science': {
+    domain: "Data Science, Analytics & AI/ML",
+    description: "From data wrangling and statistical analysis to deep learning models.",
+    milestones: [
+      {
+        id: 'ds1',
+        step: 1,
+        title: "Python for Data Science, NumPy & Pandas",
+        duration: "2 Weeks",
+        prerequisites: ["Basic Programming", "Data Structures"]
+      },
+      {
+        id: 'ds2',
+        step: 2,
+        title: "Applied Mathematics & Statistics",
+        duration: "2 Weeks",
+        prerequisites: ["High School Math", "Linear Algebra Basics"]
+      },
+      {
+        id: 'ds3',
+        step: 3,
+        title: "Machine Learning Algorithms & Scikit-Learn",
+        duration: "3 Weeks",
+        prerequisites: ["Python", "Pandas", "Basic Statistics"]
+      }
+    ]
+  },
+  'software-engineering': {
+    domain: "Software Engineering & Data Structures (DSA)",
+    description: "Core algorithms, complexity analysis, and scalable system design.",
+    milestones: [
+      {
+        id: 'se1',
+        step: 1,
+        title: "Time & Space Complexity + Arrays & Strings",
+        duration: "2 Weeks",
+        prerequisites: ["Basic C++/Java/Python", "Loops & Logic"]
+      },
+      {
+        id: 'se2',
+        step: 2,
+        title: "Recursion, Backtracking & Dynamic Programming",
+        duration: "3 Weeks",
+        prerequisites: ["Arrays", "Call Stack", "Mathematical Induction"]
+      },
+      {
+        id: 'se3',
+        step: 3,
+        title: "Trees, BST & Graph Algorithms",
+        duration: "3 Weeks",
+        prerequisites: ["Recursion", "Queue/Stack", "Pointers"]
+      }
+    ]
+  }
+};
+
+// =========================================================
+// 100% WORKING VERIFIED HIGH-VIEW YOUTUBE VIDEOS
 // =========================================================
 const verifiedVideoLibrary = {
-  // --- Full-Stack Web Development Track ---
-  'm1': {
-    videoId: 'pQN-pnXPaVg',
-    title: 'HTML & CSS Full Course - Build Modern Responsive Websites (7.7M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '2 Hours'
-  },
-  'm2': {
-    videoId: 'W6NZfCO5SIk',
-    title: 'JavaScript Tutorial for Beginners: Full Fundamentals & ES6 (15M+ Views)',
-    creator: 'Programming with Mosh',
-    duration: '1 Hour'
-  },
-  'm3': {
-    videoId: 'bMknfKXIFA8',
-    title: 'React.js Complete Beginner Course with Real Projects (4.2M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '12 Hours'
-  },
-  'm4': {
-    videoId: 'Oe421EPjeBE',
-    title: 'Node.js and Express.js Full Backend Architecture Course (4.4M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '8 Hours'
-  },
-  'm5': {
-    videoId: 'ofme2o29ngU',
-    title: 'MongoDB Crash Course & Database Schema Modeling (1.5M+ Views)',
-    creator: 'Web Dev Simplified',
-    duration: '35 Mins'
-  },
-
-  // --- Data Science & AI Track ---
-  'ds1': {
-    videoId: 'rfscVS0vtbw',
-    title: 'Python for Beginners & Data Science Fundamentals (40M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '4 Hours 20m'
-  },
-  'ds2': {
-    videoId: 'fNk_zzaMoSs',
-    title: 'Essence of Linear Algebra & Neural Networks Mathematics (8M+ Views)',
-    creator: '3Blue1Brown',
-    duration: '15 Mins'
-  },
-  'ds3': {
-    videoId: 'i_LwzRVP7bg',
-    title: 'Machine Learning for Everybody - Complete Foundations Course (10M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '3 Hours 50m'
-  },
-
-  // --- Software Engineering & DSA Track ---
-  'se1': {
-    videoId: '0IAPZzGSbME',
-    title: 'Analysis of Algorithms, Time & Space Complexity (7.8M+ Views)',
-    creator: 'Abdul Bari',
-    duration: '19 Mins'
-  },
-  'se2': {
-    videoId: '8hly31xKli0',
-    title: 'Algorithms and Data Structures Complete Master Course (6M+ Views)',
-    creator: 'freeCodeCamp.org',
-    duration: '5 Hours 20m'
-  },
-  'se3': {
-    videoId: 'DgXR2OWQnLc',
-    title: 'Graph Theory, Trees, BFS & DFS Algorithmic Traversal (1M+ Views)',
-    creator: 'WilliamFiset',
-    duration: '1 Hour 45m'
-  }
+  'm1': { videoId: 'pQN-pnXPaVg', title: 'HTML & CSS Full Course - Build Modern Responsive Websites (7.7M+ Views)', creator: 'freeCodeCamp.org', duration: '2 Hours' },
+  'm2': { videoId: 'W6NZfCO5SIk', title: 'JavaScript Tutorial for Beginners: Full Fundamentals & ES6 (15M+ Views)', creator: 'Programming with Mosh', duration: '1 Hour' },
+  'm3': { videoId: 'bMknfKXIFA8', title: 'React.js Complete Beginner Course with Real Projects (4.2M+ Views)', creator: 'freeCodeCamp.org', duration: '12 Hours' },
+  'm4': { videoId: 'Oe421EPjeBE', title: 'Node.js and Express.js Full Backend Architecture Course (4.4M+ Views)', creator: 'freeCodeCamp.org', duration: '8 Hours' },
+  'm5': { videoId: 'ofme2o29ngU', title: 'MongoDB Crash Course & Database Schema Modeling (1.5M+ Views)', creator: 'Web Dev Simplified', duration: '35 Mins' },
+  'ds1': { videoId: 'rfscVS0vtbw', title: 'Python for Beginners & Data Science Fundamentals (40M+ Views)', creator: 'freeCodeCamp.org', duration: '4 Hours 20m' },
+  'ds2': { videoId: 'fNk_zzaMoSs', title: 'Essence of Linear Algebra & Neural Networks Mathematics (8M+ Views)', creator: '3Blue1Brown', duration: '15 Mins' },
+  'ds3': { videoId: 'i_LwzRVP7bg', title: 'Machine Learning for Everybody - Complete Foundations Course (10M+ Views)', creator: 'freeCodeCamp.org', duration: '3 Hours 50m' },
+  'se1': { videoId: '0IAPZzGSbME', title: 'Analysis of Algorithms, Time & Space Complexity (7.8M+ Views)', creator: 'Abdul Bari', duration: '19 Mins' },
+  'se2': { videoId: '8hly31xKli0', title: 'Algorithms and Data Structures Complete Master Course (6M+ Views)', creator: 'freeCodeCamp.org', duration: '5 Hours 20m' },
+  'se3': { videoId: 'DgXR2OWQnLc', title: 'Graph Theory, Trees, BFS & DFS Algorithmic Traversal (1M+ Views)', creator: 'WilliamFiset', duration: '1 Hour 45m' }
 };
 
 // Milestone Quizzes Bank
 const milestoneQuizzes = {
   'm1': [
-    {
-      q: "HTML me semantic container element kaunsa hai?",
-      opts: ["<div>", "<section>", "<span>", "<font>"],
-      ans: 1,
-      exp: "'<section>' ek semantic HTML5 tag hai jo content structure define karta hai."
-    },
-    {
-      q: "CSS Flexbox me main axis ke along items align karne ke liye kya use hota hai?",
-      opts: ["align-items", "justify-content", "align-content", "flex-wrap"],
-      ans: 1,
-      exp: "'justify-content' hamesha main axis par alignment control karta hai."
-    }
+    { q: "HTML me semantic container element kaunsa hai?", opts: ["<div>", "<section>", "<span>", "<font>"], ans: 1, exp: "'<section>' ek semantic HTML5 tag hai jo meaning define karta hai." },
+    { q: "CSS Flexbox me main axis ke along items align karne ke liye kya use hota hai?", opts: ["align-items", "justify-content", "align-content", "flex-wrap"], ans: 1, exp: "'justify-content' main axis alignment control karta hai." }
   ],
   'm2': [
-    {
-      q: "JavaScript ES6 me immutable variable declare karne ke liye kya use karte hain?",
-      opts: ["var", "let", "const", "def"],
-      ans: 2,
-      exp: "'const' se variable re-assign nahi ho sakta."
-    },
-    {
-      q: "Async operations handle karne ke liye modern JS me kya use hota hai?",
-      opts: ["async/await", "goto", "sleep()", "thread.start()"],
-      ans: 0,
-      exp: "'async/await' promises ko synchronous style me clean banata hai."
-    }
+    { q: "JavaScript ES6 me immutable variable declare karne ke liye kya use karte hain?", opts: ["var", "let", "const", "def"], ans: 2, exp: "'const' se variable re-assign nahi ho sakta." },
+    { q: "Async operations handle karne ke liye modern JS me kya use hota hai?", opts: ["async/await", "goto", "sleep()", "thread.start()"], ans: 0, exp: "'async/await' asynchronous code ko readable banata hai." }
   ],
   'm3': [
-    {
-      q: "React component me local state store karne ke liye kaunsa basic hook use hota hai?",
-      opts: ["useEffect", "useMemo", "useState", "useRef"],
-      ans: 2,
-      exp: "'useState' hook local state update aur manage karta hai."
-    },
-    {
-      q: "Side-effects jaise API calls ke liye kaunsa hook use hota hai?",
-      opts: ["useEffect", "useReducer", "useCallback", "useState"],
-      ans: 0,
-      exp: "'useEffect' component mount/update hone par side-effects execute karta hai."
-    }
+    { q: "React component me state manage karne ke liye kaunsa basic hook use hota hai?", opts: ["useEffect", "useMemo", "useState", "useRef"], ans: 2, exp: "'useState' hook local component state store karta hai." },
+    { q: "Side-effects jaise API calls ke liye kaunsa hook use hota hai?", opts: ["useEffect", "useReducer", "useCallback", "useState"], ans: 0, exp: "'useEffect' component side-effects run karta hai." }
   ],
   'm4': [
-    {
-      q: "Node.js me REST APIs create karne ke liye lightweight web framework kaunsa hai?",
-      opts: ["Express.js", "Django", "Spring Boot", "Laravel"],
-      ans: 0,
-      exp: "Express.js Node.js ka standard routing framework hai."
-    },
-    {
-      q: "Incoming request body data ko parse karne ke liye kaunsa middleware use hota hai?",
-      opts: ["express.static()", "express.json()", "cors()", "morgan()"],
-      ans: 1,
-      exp: "'express.json()' incoming JSON payload parse karta hai."
-    }
+    { q: "Node.js me REST APIs create karne ke liye lightweight web framework kaunsa hai?", opts: ["Express.js", "Django", "Spring Boot", "Laravel"], ans: 0, exp: "Express.js Node.js ka standard routing framework hai." },
+    { q: "Incoming request body data ko parse karne ke liye kaunsa middleware use hota hai?", opts: ["express.static()", "express.json()", "cors()", "morgan()"], ans: 1, exp: "'express.json()' incoming JSON payload parse karta hai." }
   ],
   'm5': [
-    {
-      q: "MongoDB kis type ka database system hai?",
-      opts: ["Relational SQL", "NoSQL Document-oriented", "Graph Only", "Flat file"],
-      ans: 1,
-      exp: "MongoDB BSON/JSON-like documents store karta hai."
-    },
-    {
-      q: "Mongoose me schema structure define karne ke liye kya use hota hai?",
-      opts: ["new mongoose.Schema()", "mongoose.table()", "mongoose.sql()", "mongoose.create()"],
-      ans: 0,
-      exp: "'mongoose.Schema' collection schema define karta hai."
-    }
+    { q: "MongoDB kis type ka database system hai?", opts: ["Relational SQL", "NoSQL Document-oriented", "Graph Only", "Flat file"], ans: 1, exp: "MongoDB BSON/JSON-like documents store karta hai." },
+    { q: "Mongoose me schema structure define karne ke liye kya use hota hai?", opts: ["new mongoose.Schema()", "mongoose.table()", "mongoose.sql()", "mongoose.create()"], ans: 0, exp: "'mongoose.Schema' database collection structure define karta hai." }
   ]
 };
 
@@ -184,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
   initAdminCredentials();
   checkAuthSession();
 
-  initBackground3D();
-  initForeground3D();
+  try { initBackground3D(); } catch (e) { console.warn("3D BG Error:", e); }
+  try { initForeground3D(); } catch (e) { console.warn("3D FG Error:", e); }
 
   const savedState = localStorage.getItem('edutech_completed_milestones');
   if (savedState) {
@@ -212,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   FEATURE 1: 100% WORKING THEATER POPUP PLAYER
+   FEATURE 1: THEATER POPUP PLAYER
    ========================================================= */
 function playVideoModal(videoId, title, creator) {
   const modal = document.getElementById('videoModal');
@@ -223,9 +213,7 @@ function playVideoModal(videoId, title, creator) {
   if (titleEl) titleEl.textContent = title;
   if (creatorEl) creatorEl.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> ${creator}`;
 
-  // Clean standard YouTube embed without restricted query parameters
   const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-
   if (iframe) iframe.src = embedUrl;
   if (modal) modal.style.display = 'flex';
 }
@@ -257,7 +245,7 @@ function openCertificateModal() {
   const dateEl = document.getElementById('certIssueDate');
   const idEl = document.getElementById('certUniqueID');
 
-  const studentName = currentUser ? currentUser.name : "Alex Sharma";
+  const studentName = currentUser ? (currentUser.name || currentUser.username || "Alex Sharma") : "Alex Sharma";
   if (nameEl) nameEl.textContent = studentName;
   if (trackEl) trackEl.textContent = currentDomainTitleText;
   
@@ -391,7 +379,7 @@ function toggleMilestoneQuiz(mId) {
   box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
-function handleQuizAnswer(btn, isCorrect, exp) {
+function handleQuizAnswer(btn, isCorrect) {
   const parent = btn.parentElement;
   const allBtns = parent.querySelectorAll('.quiz-opt-btn');
   allBtns.forEach(b => {
@@ -405,16 +393,17 @@ function handleQuizAnswer(btn, isCorrect, exp) {
     btn.classList.add('wrong');
   }
 
+  const expText = btn.getAttribute('data-exp') || 'Checked!';
   const expBox = document.createElement('div');
   expBox.style.fontSize = '0.74rem';
   expBox.style.marginTop = '0.4rem';
   expBox.style.color = isCorrect ? '#86efac' : '#fca5a5';
-  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${exp}`;
+  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${expText}`;
   parent.parentElement.appendChild(expBox);
 }
 
 /* =========================================================
-   FEATURE 5: PERSONAL MILESTONE NOTES SCRATCHPAD
+   FEATURE 5: PERSONAL NOTES SCRATCHPAD
    ========================================================= */
 function toggleMilestoneNotes(mId) {
   const box = document.getElementById(`notes-box-${mId}`);
@@ -439,7 +428,7 @@ function autoSaveMilestoneNote(mId) {
 }
 
 /* =========================================================
-   AUTHENTICATION & VISITOR GATE
+   SAFE AUTHENTICATION & VISITOR GATE
    ========================================================= */
 function initAdminCredentials() {
   const customKey = localStorage.getItem('edutech_custom_master_key');
@@ -451,11 +440,11 @@ function initAdminCredentials() {
 function setupTwoClickGate() {
   document.addEventListener('click', (e) => {
     if (isAdmin || currentUser || !isGateEnabled) return;
-    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('#videoModal') || e.target.closest('#certificateModal') || e.target.closest('.sub-account-bar')) return;
+    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('#videoModal') || e.target.closest('#certificateModal') || e.target.closest('.sub-account-bar') || e.target.closest('.navbar')) return;
 
     userInteractionCount++;
-    if (userInteractionCount >= 2) {
-      openAuthModal('signup', true);
+    if (userInteractionCount >= 3) {
+      openAuthModal('signup', false);
     }
   });
 }
@@ -484,10 +473,15 @@ function checkAuthSession() {
   if (storedUser) {
     try {
       currentUser = JSON.parse(storedUser);
+      const displayName = (currentUser && (currentUser.name || currentUser.username || "Learner")).toString();
       if (authNavBtn) authNavBtn.style.display = 'none';
       if (userProfileNav) userProfileNav.style.display = 'flex';
-      if (navUserName) navUserName.textContent = isAdmin ? "Master Admin" : currentUser.name;
-      if (navUserAvatar) navUserAvatar.innerHTML = isAdmin ? '<i class="fa-solid fa-crown" style="font-size:0.75rem;"></i>' : currentUser.name.charAt(0).toUpperCase();
+      if (navUserName) navUserName.textContent = isAdmin ? "Master Admin" : displayName;
+      if (navUserAvatar) {
+        navUserAvatar.innerHTML = isAdmin 
+          ? '<i class="fa-solid fa-crown" style="font-size:0.75rem;"></i>' 
+          : displayName.charAt(0).toUpperCase();
+      }
 
       if (accountStatusText) {
         accountStatusText.innerHTML = isAdmin 
@@ -648,7 +642,7 @@ function logoutUser() {
 }
 
 /* =========================================================
-   ADMIN PORTAL (TWO-FACTOR PIN & CUSTOM SETUP)
+   ADMIN PORTAL
    ========================================================= */
 function openAdminModal() {
   const modal = document.getElementById('adminModal');
@@ -759,19 +753,7 @@ function handleCustomPinCreation(e) {
   localStorage.setItem('edutech_custom_master_pin', customPin);
 
   showAdminAlert("Custom PIN & Key saved! Auto-logging in as Admin...", 'success');
-
-  setTimeout(() => {
-    activateAdminMode();
-  }, 700);
-}
-
-function showAdminAlert(msg, type = 'error') {
-  const alertBox = document.getElementById('adminAlert');
-  if (alertBox) {
-    alertBox.textContent = msg;
-    alertBox.className = `auth-alert ${type}`;
-    alertBox.style.display = 'block';
-  }
+  setTimeout(() => { activateAdminMode(); }, 700);
 }
 
 function activateAdminMode() {
@@ -781,12 +763,7 @@ function activateAdminMode() {
   const secureToken = "EDUTECH_ROOT_AUTH_" + btoa(DEFAULT_MASTER_KEY + ":" + Date.now());
   localStorage.setItem('edutech_admin_token', secureToken);
 
-  currentUser = {
-    id: 1001,
-    name: "Master Admin",
-    email: "admin@edutech.io",
-    role: "admin"
-  };
+  currentUser = { id: 1001, name: "Master Admin", email: "admin@edutech.io", role: "admin" };
   localStorage.setItem('edutech_user', JSON.stringify(currentUser));
 
   checkAuthSession();
@@ -933,63 +910,28 @@ function initForeground3D() {
   pLight1.position.set(5, 5, 5);
   fgScene.add(pLight1);
 
-  const pLight2 = new THREE.PointLight(0x8b5cf6, 2, 50);
-  pLight2.position.set(-5, -5, 5);
-  fgScene.add(pLight2);
-
   const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
   fgScene.add(ambLight);
 
   buildForegroundMesh('web-dev');
 
-  let isDragging = false;
-  let prevMousePos = { x: 0, y: 0 };
-
-  canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    prevMousePos = { x: e.clientX, y: e.clientY };
-  });
-
-  window.addEventListener('mouseup', () => { isDragging = false; });
-
-  canvas.addEventListener('mousemove', (e) => {
-    if (!isDragging || !fgMesh) return;
-    const deltaX = e.clientX - prevMousePos.x;
-    const deltaY = e.clientY - prevMousePos.y;
-    fgMesh.rotation.y += deltaX * 0.01;
-    fgMesh.rotation.x += deltaY * 0.01;
-    if (fgWireframeMesh) {
-      fgWireframeMesh.rotation.y += deltaX * 0.01;
-      fgWireframeMesh.rotation.x += deltaY * 0.01;
-    }
-    prevMousePos = { x: e.clientX, y: e.clientY };
-  });
-
   function animateFG() {
     requestAnimationFrame(animateFG);
-    if (!isDragging && fgMesh) {
-      fgMesh.rotation.y += 0.012;
-      fgMesh.rotation.x += 0.006;
+    if (fgMesh) {
+      fgMesh.rotation.y += 0.01;
+      fgMesh.rotation.x += 0.005;
       if (fgWireframeMesh) {
-        fgWireframeMesh.rotation.y += 0.012;
-        fgWireframeMesh.rotation.x += 0.006;
+        fgWireframeMesh.rotation.y += 0.01;
+        fgWireframeMesh.rotation.x += 0.005;
       }
     }
     fgRenderer.render(fgScene, fgCamera);
   }
   animateFG();
-
-  window.addEventListener('resize', () => {
-    if (canvas && canvas.clientWidth > 0) {
-      fgCamera.aspect = canvas.clientWidth / canvas.clientHeight;
-      fgCamera.updateProjectionMatrix();
-      fgRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    }
-  });
 }
 
 function buildForegroundMesh(domain) {
-  if (!fgScene) return;
+  if (!fgScene || typeof THREE === 'undefined') return;
   if (fgMesh) fgScene.remove(fgMesh);
   if (fgWireframeMesh) fgScene.remove(fgWireframeMesh);
 
@@ -1006,22 +948,11 @@ function buildForegroundMesh(domain) {
     matColor = 0x10b981;
   }
 
-  const mat = new THREE.MeshPhongMaterial({
-    color: matColor,
-    transparent: true,
-    opacity: 0.35,
-    shininess: 90,
-    flatShading: true
-  });
+  const mat = new THREE.MeshPhongMaterial({ color: matColor, transparent: true, opacity: 0.35, flatShading: true });
   fgMesh = new THREE.Mesh(geo, mat);
   fgScene.add(fgMesh);
 
-  const wireMat = new THREE.MeshBasicMaterial({
-    color: matColor,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.85
-  });
+  const wireMat = new THREE.MeshBasicMaterial({ color: matColor, wireframe: true, transparent: true, opacity: 0.85 });
   fgWireframeMesh = new THREE.Mesh(geo, wireMat);
   fgScene.add(fgWireframeMesh);
 }
@@ -1058,21 +989,29 @@ function quickSelectTrack(domain) {
 }
 
 /* =========================================================
-   ROADMAP RENDERING WITH TOP-TIER EMBEDDED VIDEOS
+   ROBUST ROADMAP FETCH WITH ZERO-FAIL FALLBACK
    ========================================================= */
 async function fetchRoadmap(domain, level) {
   try {
     const response = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
-    const data = await response.json();
-
-    if (data.success) {
-      currentMilestones = data.milestones;
-      renderRoadmap(data.domain, data.description, data.milestones);
-      updateProgress();
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.success && data.milestones && data.milestones.length > 0) {
+        currentMilestones = data.milestones;
+        renderRoadmap(data.domain || currentDomainTitleText, data.description || "", data.milestones);
+        updateProgress();
+        return;
+      }
     }
   } catch (error) {
-    console.error("Roadmap fetch error:", error);
+    console.warn("API offline or error, loading built-in roadmap.");
   }
+
+  // Guaranteed Fallback if backend API is offline
+  const fallback = DEFAULT_ROADMAPS[domain] || DEFAULT_ROADMAPS['web-dev'];
+  currentMilestones = fallback.milestones;
+  renderRoadmap(fallback.domain, fallback.description, fallback.milestones);
+  updateProgress();
 }
 
 function renderRoadmap(title, description, milestones) {
@@ -1092,17 +1031,16 @@ function renderRoadmap(title, description, milestones) {
     card.className = `milestone-card ${isCompleted ? 'completed' : ''}`;
     card.id = `card-${milestone.id}`;
 
-    const prereqHTML = milestone.prerequisites.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
+    const prereqs = milestone.prerequisites || ["Core Programming Logic", "Syntax Foundations"];
+    const prereqHTML = prereqs.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
 
-    // Get guaranteed working video object from our verified library
     const targetVideo = verifiedVideoLibrary[milestone.id] || {
       videoId: 'pQN-pnXPaVg',
       title: `${milestone.title} Complete Tutorial`,
       creator: 'Top Industry Mentors',
-      duration: milestone.duration
+      duration: milestone.duration || '2 Hours'
     };
 
-    // Guaranteed Direct YouTube URL that opens the exact video
     const directWatchUrl = `https://www.youtube.com/watch?v=${targetVideo.videoId}`;
 
     const videosHTML = `
@@ -1113,7 +1051,7 @@ function renderRoadmap(title, description, milestones) {
           <span class="video-duration"> • ${targetVideo.duration}</span>
         </div>
         <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap;">
-          <button class="watch-modal-btn" onclick="playVideoModal('${targetVideo.videoId}', '${targetVideo.title.replace(/'/g, "\\'")}', '${targetVideo.creator}')" style="margin-top:0; flex:1;">
+          <button class="watch-modal-btn" onclick="playVideoModal('${targetVideo.videoId}', '${targetVideo.title}', '${targetVideo.creator}')" style="margin-top:0; flex:1;">
             <i class="fa-solid fa-circle-play"></i> Watch in Theater
           </button>
           <a href="${directWatchUrl}" target="_blank" rel="noopener noreferrer" style="margin-top:0; padding: 0.55rem 0.85rem; font-size: 0.78rem; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-weight: 600;">
@@ -1137,7 +1075,7 @@ function renderRoadmap(title, description, milestones) {
         <p class="quiz-q-title">Q${qIdx + 1}: ${qObj.q}</p>
         <div class="quiz-options">
           ${qObj.opts.map((opt, oIdx) => `
-            <button class="quiz-opt-btn" onclick="handleQuizAnswer(this, ${oIdx === qObj.ans}, '${qObj.exp.replace(/'/g, "\\'")}')">
+            <button class="quiz-opt-btn" data-exp="${qObj.exp}" onclick="handleQuizAnswer(this, ${oIdx === qObj.ans})">
               ${opt}
             </button>
           `).join('')}
@@ -1154,11 +1092,11 @@ function renderRoadmap(title, description, milestones) {
             ${isCompleted ? 'checked' : ''} 
             onchange="toggleMilestoneCompletion('${milestone.id}')">
           <div>
-            <span class="milestone-step-number">Milestone ${milestone.step}</span>
+            <span class="milestone-step-number">Milestone ${milestone.step || 1}</span>
             <h3 style="display:inline; margin-left: 0.6rem;">${milestone.title}</h3>
           </div>
         </div>
-        <span class="milestone-duration"><i class="fa-regular fa-clock"></i> ${milestone.duration}</span>
+        <span class="milestone-duration"><i class="fa-regular fa-clock"></i> ${milestone.duration || 'Flexible'}</span>
       </div>
 
       <div>
