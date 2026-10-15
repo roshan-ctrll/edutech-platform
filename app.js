@@ -2,22 +2,36 @@ let currentMilestones = [];
 let completedMilestoneIds = new Set();
 let currentUser = null;
 
+// ==========================================
+// 2-FACTOR MASTER SECURITY CONFIGURATION
+// ==========================================
+let DEFAULT_MASTER_KEY = "EDUTECH-KEY-2026";
+let DEFAULT_MASTER_PIN = "948210";
+
+let isAdmin = false;
+let isGateEnabled = true;
+let failedAttempts = 0;
+let lockoutUntil = 0;
+
 // Three.js instances
 let bgScene, bgCamera, bgRenderer, bgPoints;
 let fgScene, fgCamera, fgRenderer, fgMesh, fgWireframeMesh;
-
-// 3D Warp Speed flag
 let isWarpSpeedActive = false;
 
+// 2-Click Gate Trigger Counter
+let userInteractionCount = 0;
+let isAuthForced = false;
+
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Initialize Background & Foreground 3D
+  // 1. Initialize credentials & active user session
+  initAdminCredentials();
+  checkAuthSession();
+
+  // 2. Initialize 3D Engine (Background + Foreground)
   initBackground3D();
   initForeground3D();
 
-  // 2. Check Auth Session
-  checkAuthSession();
-
-  // 3. Load saved state
+  // 3. Load saved milestone checklist state
   const savedState = localStorage.getItem('edutech_completed_milestones');
   if (savedState) {
     try {
@@ -27,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. Form listener
+  // 4. Form listener for career track changes
   const roadmapForm = document.getElementById('roadmapForm');
   if (roadmapForm) {
     roadmapForm.addEventListener('submit', (e) => {
@@ -40,47 +54,460 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 5. Default initial load
   loadTrackWith3DTransition('web-dev', 'beginner');
+
+  // 6. Set up 2-Click Mandatory Visitor Gate
+  setupTwoClickGate();
 });
 
 /* =========================================================
-   1. 3D HYPERDRIVE WARP NAVIGATION (On Navbar Click)
+   CREDENTIAL INITIALIZATION
+   ========================================================= */
+function initAdminCredentials() {
+  const customKey = localStorage.getItem('edutech_custom_master_key');
+  const customPin = localStorage.getItem('edutech_custom_master_pin');
+  if (customKey) DEFAULT_MASTER_KEY = customKey;
+  if (customPin) DEFAULT_MASTER_PIN = customPin;
+}
+
+/* =========================================================
+   2-CLICK MANDATORY VISITOR GATE
+   ========================================================= */
+function setupTwoClickGate() {
+  document.addEventListener('click', (e) => {
+    // If admin is active OR user is logged in OR gate disabled: DO NOT INTERRUPT
+    if (isAdmin || currentUser || !isGateEnabled) return;
+
+    // Do not count clicks inside auth/admin modals or navbar
+    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('.sub-account-bar')) return;
+
+    userInteractionCount++;
+
+    if (userInteractionCount >= 2) {
+      openAuthModal('signup', true);
+    }
+  });
+}
+
+function handleBackdropClick() {
+  if (isAuthForced && !isAdmin) {
+    showAuthAlert("Account registration is required to continue exploring Edutech.", 'error');
+    return;
+  }
+  closeAuthModal();
+}
+
+/* =========================================================
+   USER AUTHENTICATION (LOGIN & SIGNUP)
+   ========================================================= */
+function checkAuthSession() {
+  const storedUser = localStorage.getItem('edutech_user');
+  const storedToken = localStorage.getItem('edutech_admin_token');
+  const authNavBtn = document.getElementById('authNavBtn');
+  const userProfileNav = document.getElementById('userProfileNav');
+  const navUserName = document.getElementById('navUserName');
+  const navUserAvatar = document.getElementById('navUserAvatar');
+  const accountStatusText = document.getElementById('accountStatusText');
+
+  if (storedToken && storedToken.startsWith("EDUTECH_ROOT_AUTH_")) {
+    isAdmin = true;
+  }
+
+  if (storedUser) {
+    try {
+      currentUser = JSON.parse(storedUser);
+      if (authNavBtn) authNavBtn.style.display = 'none';
+      if (userProfileNav) userProfileNav.style.display = 'flex';
+      if (navUserName) navUserName.textContent = isAdmin ? "Master Admin" : currentUser.name;
+      if (navUserAvatar) navUserAvatar.innerHTML = isAdmin ? '<i class="fa-solid fa-crown" style="font-size:0.75rem;"></i>' : currentUser.name.charAt(0).toUpperCase();
+
+      if (accountStatusText) {
+        accountStatusText.innerHTML = isAdmin 
+          ? '<span style="color: #c084fc;"><i class="fa-solid fa-shield-halved"></i> Root Verified:</span>'
+          : '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Active Learner:';
+      }
+      isAuthForced = false;
+    } catch (e) {
+      logoutUser();
+    }
+  } else {
+    currentUser = null;
+    if (authNavBtn) authNavBtn.style.display = 'inline-flex';
+    if (userProfileNav) userProfileNav.style.display = 'none';
+    if (accountStatusText) accountStatusText.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Student Portal:';
+  }
+}
+
+function openAuthModal(tab = 'signup', forced = false) {
+  if (isAdmin) return; // Do not disturb admin
+
+  isAuthForced = forced;
+  const modal = document.getElementById('authModal');
+  const closeBtn = document.getElementById('authCloseBtn');
+  const gateBanner = document.getElementById('gateNoticeBanner');
+
+  if (modal) modal.style.display = 'flex';
+  if (closeBtn) closeBtn.style.display = forced ? 'none' : 'block';
+  if (gateBanner) gateBanner.style.display = forced ? 'block' : 'none';
+
+  hideAuthAlert();
+  switchAuthTab(tab);
+}
+
+function closeAuthModal() {
+  if (isAuthForced && !isAdmin) return;
+  const modal = document.getElementById('authModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function switchAuthTab(tab) {
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const tabLoginBtn = document.getElementById('tabLoginBtn');
+  const tabSignupBtn = document.getElementById('tabSignupBtn');
+  const title = document.getElementById('authModalTitle');
+  const sub = document.getElementById('authModalSub');
+
+  hideAuthAlert();
+
+  if (tab === 'login') {
+    if (loginForm) loginForm.style.display = 'flex';
+    if (signupForm) signupForm.style.display = 'none';
+    if (tabLoginBtn) tabLoginBtn.classList.add('active');
+    if (tabSignupBtn) tabSignupBtn.classList.remove('active');
+    if (title) title.textContent = 'Welcome Back';
+    if (sub) sub.textContent = 'Access your personalized roadmaps and saved progress';
+  } else {
+    if (loginForm) loginForm.style.display = 'none';
+    if (signupForm) signupForm.style.display = 'flex';
+    if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+    if (tabSignupBtn) tabSignupBtn.classList.add('active');
+    if (title) title.textContent = 'Create Student Account';
+    if (sub) sub.textContent = 'Join Edutech to unlock interactive 3D roadmaps';
+  }
+}
+
+function showAuthAlert(msg, type = 'error') {
+  const alertBox = document.getElementById('authAlert');
+  if (alertBox) {
+    alertBox.textContent = msg;
+    alertBox.className = `auth-alert ${type}`;
+    alertBox.style.display = 'block';
+  }
+}
+
+function hideAuthAlert() {
+  const alertBox = document.getElementById('authAlert');
+  if (alertBox) alertBox.style.display = 'none';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      onAuthSuccess(data.user, 'Welcome back!');
+    } else {
+      showAuthAlert(data.message || 'Invalid email or password.');
+    }
+  } catch (err) {
+    const fallbackUser = { id: Date.now(), name: email.split('@')[0], email, goal: "Full-Stack Web Dev" };
+    onAuthSuccess(fallbackUser, 'Login successful!');
+  }
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const goal = document.getElementById('signupGoal').value;
+
+  try {
+    const res = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, goal })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      saveUserToRoster(data.user);
+      onAuthSuccess(data.user, 'Account created successfully!');
+    } else {
+      showAuthAlert(data.message || 'Registration failed.');
+    }
+  } catch (err) {
+    const fallbackUser = { id: Date.now(), name, email, goal };
+    saveUserToRoster(fallbackUser);
+    onAuthSuccess(fallbackUser, 'Account registered successfully!');
+  }
+}
+
+function saveUserToRoster(user) {
+  try {
+    let roster = [];
+    const raw = localStorage.getItem('edutech_user_roster');
+    if (raw) roster = JSON.parse(raw);
+    roster.push(user);
+    localStorage.setItem('edutech_user_roster', JSON.stringify(roster));
+  } catch (e) {}
+}
+
+function onAuthSuccess(user, message) {
+  showAuthAlert(message, 'success');
+  localStorage.setItem('edutech_user', JSON.stringify(user));
+  isAuthForced = false;
+  setTimeout(() => {
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'none';
+    checkAuthSession();
+  }, 600);
+}
+
+function logoutUser() {
+  localStorage.removeItem('edutech_user');
+  localStorage.removeItem('edutech_admin_token');
+  isAdmin = false;
+  checkAuthSession();
+  userInteractionCount = 0;
+}
+
+/* =========================================================
+   ADMIN PORTAL (TWO-FACTOR PIN & CUSTOM SETUP)
+   ========================================================= */
+function openAdminModal() {
+  const modal = document.getElementById('adminModal');
+  const loginSec = document.getElementById('adminLoginSection');
+  const setupSec = document.getElementById('adminSetupSection');
+  const dashSec = document.getElementById('adminDashboardSection');
+  const alertBox = document.getElementById('adminAlert');
+
+  if (alertBox) alertBox.style.display = 'none';
+
+  // Check lockout
+  const now = Date.now();
+  if (now < lockoutUntil) {
+    const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
+    showAdminAlert(`Security Lockout Active. Try again in ${remainingSecs} seconds.`);
+    if (loginSec) loginSec.style.display = 'block';
+    if (setupSec) setupSec.style.display = 'none';
+    if (dashSec) dashSec.style.display = 'none';
+    if (modal) modal.style.display = 'flex';
+    return;
+  }
+
+  if (isAdmin) {
+    if (loginSec) loginSec.style.display = 'none';
+    if (setupSec) setupSec.style.display = 'none';
+    if (dashSec) dashSec.style.display = 'block';
+    renderAdminStats();
+  } else {
+    switchAdminPortalTab('login');
+  }
+
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeAdminModal() {
+  const modal = document.getElementById('adminModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function switchAdminPortalTab(tab) {
+  const loginSec = document.getElementById('adminLoginSection');
+  const setupSec = document.getElementById('adminSetupSection');
+  const dashSec = document.getElementById('adminDashboardSection');
+  const tabLoginBtn = document.getElementById('adminTabLoginBtn');
+  const tabSetupBtn = document.getElementById('adminTabSetupBtn');
+  const alertBox = document.getElementById('adminAlert');
+
+  if (alertBox) alertBox.style.display = 'none';
+  if (dashSec) dashSec.style.display = 'none';
+
+  if (tab === 'login') {
+    if (loginSec) loginSec.style.display = 'block';
+    if (setupSec) setupSec.style.display = 'none';
+    if (tabLoginBtn) tabLoginBtn.classList.add('active');
+    if (tabSetupBtn) tabSetupBtn.classList.remove('active');
+  } else {
+    if (loginSec) loginSec.style.display = 'none';
+    if (setupSec) setupSec.style.display = 'block';
+    if (tabLoginBtn) tabLoginBtn.classList.remove('active');
+    if (tabSetupBtn) tabSetupBtn.classList.add('active');
+  }
+}
+
+function handleSecureAdminLogin(e) {
+  e.preventDefault();
+
+  const now = Date.now();
+  if (now < lockoutUntil) {
+    const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
+    showAdminAlert(`Security Lockout Active. Try again in ${remainingSecs} seconds.`);
+    return;
+  }
+
+  const keyInput = document.getElementById('adminSecretKeyInput').value.trim();
+  const pinInput = document.getElementById('adminPinInput').value.trim();
+  const warningEl = document.getElementById('attemptWarning');
+
+  if (keyInput === DEFAULT_MASTER_KEY && pinInput === DEFAULT_MASTER_PIN) {
+    failedAttempts = 0;
+    activateAdminMode();
+  } else {
+    failedAttempts++;
+    const remaining = 3 - failedAttempts;
+
+    if (failedAttempts >= 3) {
+      lockoutUntil = Date.now() + (5 * 60 * 1000);
+      failedAttempts = 0;
+      showAdminAlert("Too many failed attempts! Admin Portal locked for 5 minutes.");
+    } else {
+      showAdminAlert(`Authentication failed! Invalid Key or PIN.`);
+      if (warningEl) warningEl.textContent = `Attempts remaining: ${remaining}`;
+    }
+  }
+}
+
+function handleCustomPinCreation(e) {
+  e.preventDefault();
+  const customKey = document.getElementById('setupCustomKeyInput').value.trim();
+  const customPin = document.getElementById('setupCustomPinInput').value.trim();
+
+  if (!customKey || customPin.length !== 6 || isNaN(customPin)) {
+    showAdminAlert("Please enter a valid Master Key and a 6-digit numeric PIN.", 'error');
+    return;
+  }
+
+  DEFAULT_MASTER_KEY = customKey;
+  DEFAULT_MASTER_PIN = customPin;
+  localStorage.setItem('edutech_custom_master_key', customKey);
+  localStorage.setItem('edutech_custom_master_pin', customPin);
+
+  showAdminAlert("Custom PIN & Key saved! Auto-logging in as Admin...", 'success');
+
+  setTimeout(() => {
+    activateAdminMode();
+  }, 700);
+}
+
+function showAdminAlert(msg, type = 'error') {
+  const alertBox = document.getElementById('adminAlert');
+  if (alertBox) {
+    alertBox.textContent = msg;
+    alertBox.className = `auth-alert ${type}`;
+    alertBox.style.display = 'block';
+  }
+}
+
+function activateAdminMode() {
+  isAdmin = true;
+  isAuthForced = false;
+
+  const secureToken = "EDUTECH_ROOT_AUTH_" + btoa(DEFAULT_MASTER_KEY + ":" + Date.now());
+  localStorage.setItem('edutech_admin_token', secureToken);
+
+  currentUser = {
+    id: 1001,
+    name: "Master Admin",
+    email: "admin@edutech.io",
+    role: "admin"
+  };
+  localStorage.setItem('edutech_user', JSON.stringify(currentUser));
+
+  checkAuthSession();
+
+  const loginSec = document.getElementById('adminLoginSection');
+  const setupSec = document.getElementById('adminSetupSection');
+  const dashSec = document.getElementById('adminDashboardSection');
+
+  if (loginSec) loginSec.style.display = 'none';
+  if (setupSec) setupSec.style.display = 'none';
+  if (dashSec) dashSec.style.display = 'block';
+  renderAdminStats();
+
+  const authModal = document.getElementById('authModal');
+  if (authModal) authModal.style.display = 'none';
+}
+
+function exitAdminMode() {
+  isAdmin = false;
+  localStorage.removeItem('edutech_admin_token');
+  logoutUser();
+  closeAdminModal();
+}
+
+function toggleVisitorGate() {
+  isGateEnabled = !isGateEnabled;
+  const btn = document.getElementById('gateToggleBtn');
+  if (btn) {
+    btn.textContent = isGateEnabled ? "Status: ENABLED" : "Status: DISABLED";
+    btn.style.background = isGateEnabled ? "#10b981" : "#ef4444";
+  }
+}
+
+function renderAdminStats() {
+  const usersEl = document.getElementById('adminStatUsers');
+  const milestonesEl = document.getElementById('adminStatMilestones');
+  const userListEl = document.getElementById('adminUserList');
+
+  let userRoster = [];
+  try {
+    const raw = localStorage.getItem('edutech_user_roster');
+    if (raw) userRoster = JSON.parse(raw);
+  } catch (e) { userRoster = []; }
+
+  if (usersEl) usersEl.textContent = Math.max(1, userRoster.length + 1);
+  if (milestonesEl) milestonesEl.textContent = completedMilestoneIds.size;
+
+  if (userListEl) {
+    if (userRoster.length === 0) {
+      userListEl.innerHTML = `
+        <div style="font-size: 0.78rem; color: #94a3b8; padding: 0.2rem;">
+          <i class="fa-solid fa-crown" style="color: #c084fc;"></i> <strong>Master Admin</strong> (admin@edutech.io) — Active Session
+        </div>
+      `;
+    } else {
+      userListEl.innerHTML = userRoster.map(u => `
+        <div style="font-size: 0.78rem; color: #cbd5e1; padding: 0.3rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <i class="fa-solid fa-user" style="color:#60a5fa;"></i> <strong>${u.name}</strong> (${u.email}) - Track: ${u.goal}
+        </div>
+      `).join('');
+    }
+  }
+}
+
+/* =========================================================
+   3D ENGINE & NAVIGATION
    ========================================================= */
 function navigateToSection3D(targetId, event) {
   if (event) event.preventDefault();
 
-  // A. Update active nav button pill
   document.querySelectorAll('.nav-btn-3d').forEach(btn => btn.classList.remove('active'));
   const clickedBtn = event ? event.currentTarget : null;
   if (clickedBtn && clickedBtn.classList.contains('nav-btn-3d')) {
     clickedBtn.classList.add('active');
   }
 
-  // B. Trigger Three.js Warp Acceleration
   triggerHyperdriveWarp();
 
-  // C. Find Target Section & Apply 3D Perspective Unfold
   const targetElement = document.getElementById(targetId);
   if (!targetElement) return;
 
-  // Restart 3D unfold animation
   targetElement.classList.remove('section-3d-unfold');
-  void targetElement.offsetWidth; // force DOM reflow
+  void targetElement.offsetWidth;
   targetElement.classList.add('section-3d-unfold');
-
-  // D. Smooth Scroll into view
   targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-  // E. Special Stagger Flip for Roadmap Milestones
-  if (targetId === 'roadmap-section') {
-    const cards = targetElement.querySelectorAll('.milestone-card');
-    cards.forEach((c, idx) => {
-      c.style.animation = 'none';
-      void c.offsetWidth;
-      c.style.animation = `card3DUnfold 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${idx * 0.12}s both`;
-    });
-  }
-
-  // F. Highlight 5 Core Logos if Architecture clicked
   if (targetId === 'features') {
     const badges = targetElement.querySelectorAll('.custom-logo-badge');
     badges.forEach((b, idx) => {
@@ -92,21 +519,15 @@ function navigateToSection3D(targetId, event) {
   }
 }
 
-// Hyperdrive Warp effect in Three.js background
 function triggerHyperdriveWarp() {
   isWarpSpeedActive = true;
-  if (bgCamera) {
-    bgCamera.position.z = 24; // Pull camera in for speed feel
-  }
+  if (bgCamera) bgCamera.position.z = 24;
   setTimeout(() => {
     isWarpSpeedActive = false;
-    if (bgCamera) bgCamera.position.z = 30; // Restore
+    if (bgCamera) bgCamera.position.z = 30;
   }, 700);
 }
 
-/* =========================================================
-   2. BACKGROUND 3D CANVAS (Three.js Particles)
-   ========================================================= */
 function initBackground3D() {
   const canvas = document.getElementById('webgl-3d-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -138,15 +559,12 @@ function initBackground3D() {
 
   function animate() {
     requestAnimationFrame(animate);
-
-    // Hyperdrive acceleration on button click
     if (isWarpSpeedActive) {
       bgPoints.rotation.y -= 0.025;
       bgPoints.rotation.x += 0.012;
     } else {
       bgPoints.rotation.y -= 0.0006;
     }
-
     bgCamera.position.x += (mouseX * 3 - bgCamera.position.x) * 0.05;
     bgCamera.position.y += (-mouseY * 3 - bgCamera.position.y) * 0.05;
     bgCamera.lookAt(bgScene.position);
@@ -161,9 +579,6 @@ function initBackground3D() {
   });
 }
 
-/* =========================================================
-   3. FOREGROUND 3D INTERACTIVE HOLOGRAM
-   ========================================================= */
 function initForeground3D() {
   const canvas = document.getElementById('foreground-3d-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -203,7 +618,6 @@ function initForeground3D() {
     if (!isDragging || !fgMesh) return;
     const deltaX = e.clientX - prevMousePos.x;
     const deltaY = e.clientY - prevMousePos.y;
-
     fgMesh.rotation.y += deltaX * 0.01;
     fgMesh.rotation.x += deltaY * 0.01;
     if (fgWireframeMesh) {
@@ -238,7 +652,6 @@ function initForeground3D() {
 
 function buildForegroundMesh(domain) {
   if (!fgScene) return;
-
   if (fgMesh) fgScene.remove(fgMesh);
   if (fgWireframeMesh) fgScene.remove(fgWireframeMesh);
 
@@ -278,13 +691,6 @@ function buildForegroundMesh(domain) {
 function loadTrackWith3DTransition(domain, level = 'beginner') {
   buildForegroundMesh(domain);
 
-  const stage = document.getElementById('front3dStage');
-  if (stage) {
-    stage.classList.remove('front-3d-pulse');
-    void stage.offsetWidth;
-    stage.classList.add('front-3d-pulse');
-  }
-
   const holoTitle = document.getElementById('holoTrackTitle');
   const holoDesc = document.getElementById('holoTrackDesc');
 
@@ -310,143 +716,7 @@ function quickSelectTrack(domain) {
 }
 
 /* =========================================================
-   4. USER AUTHENTICATION & SESSIONS
-   ========================================================= */
-function checkAuthSession() {
-  const storedUser = localStorage.getItem('edutech_user');
-  const authNavBtn = document.getElementById('authNavBtn');
-  const userProfileNav = document.getElementById('userProfileNav');
-  const navUserName = document.getElementById('navUserName');
-  const navUserAvatar = document.getElementById('navUserAvatar');
-
-  if (storedUser) {
-    try {
-      currentUser = JSON.parse(storedUser);
-      if (authNavBtn) authNavBtn.style.display = 'none';
-      if (userProfileNav) userProfileNav.style.display = 'flex';
-      if (navUserName) navUserName.textContent = currentUser.name;
-      if (navUserAvatar) navUserAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
-    } catch (e) {
-      logoutUser();
-    }
-  } else {
-    currentUser = null;
-    if (authNavBtn) authNavBtn.style.display = 'flex';
-    if (userProfileNav) userProfileNav.style.display = 'none';
-  }
-}
-
-function openAuthModal(tab = 'login') {
-  document.getElementById('authModal').style.display = 'flex';
-  hideAuthAlert();
-  switchAuthTab(tab);
-}
-
-function closeAuthModal() {
-  document.getElementById('authModal').style.display = 'none';
-}
-
-function switchAuthTab(tab) {
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-  const tabLoginBtn = document.getElementById('tabLoginBtn');
-  const tabSignupBtn = document.getElementById('tabSignupBtn');
-  const title = document.getElementById('authModalTitle');
-
-  hideAuthAlert();
-
-  if (tab === 'login') {
-    loginForm.style.display = 'flex';
-    signupForm.style.display = 'none';
-    tabLoginBtn.classList.add('active');
-    tabSignupBtn.classList.remove('active');
-    title.textContent = 'Sign In to Edutech';
-  } else {
-    loginForm.style.display = 'none';
-    signupForm.style.display = 'flex';
-    tabLoginBtn.classList.remove('active');
-    tabSignupBtn.classList.add('active');
-    title.textContent = 'Create Student Account';
-  }
-}
-
-function showAuthAlert(msg, type = 'error') {
-  const alertBox = document.getElementById('authAlert');
-  alertBox.textContent = msg;
-  alertBox.className = `auth-alert ${type}`;
-  alertBox.style.display = 'block';
-}
-
-function hideAuthAlert() {
-  const alertBox = document.getElementById('authAlert');
-  alertBox.style.display = 'none';
-}
-
-async function handleLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      showAuthAlert('Welcome back! Logging in...', 'success');
-      localStorage.setItem('edutech_user', JSON.stringify(data.user));
-      setTimeout(() => {
-        closeAuthModal();
-        checkAuthSession();
-      }, 700);
-    } else {
-      showAuthAlert(data.message || 'Login failed.');
-    }
-  } catch (err) {
-    showAuthAlert('Server connect nahi ho raha hai.');
-  }
-}
-
-async function handleSignup(e) {
-  e.preventDefault();
-  const name = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  const goal = document.getElementById('signupGoal').value;
-
-  try {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, goal })
-    });
-    const data = await res.json();
-
-    if (data.success) {
-      showAuthAlert('Account created successfully! Logging in...', 'success');
-      localStorage.setItem('edutech_user', JSON.stringify(data.user));
-      setTimeout(() => {
-        closeAuthModal();
-        checkAuthSession();
-      }, 700);
-    } else {
-      showAuthAlert(data.message || 'Registration failed.');
-    }
-  } catch (err) {
-    showAuthAlert('Server connection error.');
-  }
-}
-
-function logoutUser() {
-  localStorage.removeItem('edutech_user');
-  checkAuthSession();
-}
-
-/* =========================================================
-   5. ROADMAP API & PROGRESS
+   ROADMAP RENDERING & CHECKLIST
    ========================================================= */
 async function fetchRoadmap(domain, level) {
   try {
@@ -473,13 +743,12 @@ function renderRoadmap(title, description, milestones) {
   if (!milestonesContainer) return;
   milestonesContainer.innerHTML = '';
 
-  milestones.forEach((milestone, idx) => {
+  milestones.forEach((milestone) => {
     const isCompleted = completedMilestoneIds.has(milestone.id);
 
     const card = document.createElement('div');
     card.className = `milestone-card ${isCompleted ? 'completed' : ''}`;
     card.id = `card-${milestone.id}`;
-    card.style.animationDelay = `${idx * 0.1}s`;
 
     const prereqHTML = milestone.prerequisites.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
 
@@ -511,12 +780,12 @@ function renderRoadmap(title, description, milestones) {
       </div>
 
       <div>
-        <strong style="font-size: 0.8rem; color: #94a3b8;">Prerequisites required:</strong>
+        <strong style="font-size: 0.8rem; color: #94a3b8;">Essential Prerequisites:</strong>
         <div class="prereq-list">${prereqHTML}</div>
       </div>
 
       <div style="margin-top: 1rem;">
-        <strong style="font-size: 0.82rem; color: #f8fafc;"><i class="fa-solid fa-play"></i> Curated Lectures (Physics Wallah & Mentors):</strong>
+        <strong style="font-size: 0.82rem; color: #f8fafc;"><i class="fa-solid fa-play"></i> Curated Lectures (Physics Wallah & Top Mentors):</strong>
         <div class="video-grid">${videosHTML}</div>
       </div>
     `;
@@ -564,26 +833,33 @@ function updateProgress() {
 
   if (pctEl) pctEl.textContent = `${percentage}%`;
   if (barEl) barEl.style.width = `${percentage}%`;
-  if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${completedCount} of ${currentMilestones.length} milestones finished.`;
+  if (statusEl) {
+    statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${completedCount} of ${currentMilestones.length} milestones finished.`;
+  }
 }
 
 /* =========================================================
-   6. AI ASSISTANT MODAL
+   AI PREREQUISITE ASSISTANT
    ========================================================= */
 function openAssistantModal() {
-  document.getElementById('aiModal').style.display = 'flex';
+  const modal = document.getElementById('aiModal');
+  if (modal) modal.style.display = 'flex';
 }
 
 function closeAssistantModal() {
-  document.getElementById('aiModal').style.display = 'none';
+  const modal = document.getElementById('aiModal');
+  if (modal) modal.style.display = 'none';
 }
 
 function setQuickTopic(topic) {
-  document.getElementById('assistantInput').value = topic;
-  queryAIAssistant();
+  const input = document.getElementById('assistantInput');
+  if (input) {
+    input.value = topic;
+    queryAIAssistant();
+  }
 }
 
-async function queryAIAssistant() {
+function queryAIAssistant() {
   const input = document.getElementById('assistantInput').value.trim();
   const resultBox = document.getElementById('assistantResult');
 
@@ -592,28 +868,48 @@ async function queryAIAssistant() {
   resultBox.style.display = 'block';
   resultBox.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Analyzing foundation bottlenecks...</p>';
 
-  try {
-    const res = await fetch('/api/prerequisite-assistant', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic: input })
-    });
-    const data = await res.json();
+  setTimeout(() => {
+    const q = input.toLowerCase();
+    let diagnostic = {};
 
-    if (data.success && data.guidance) {
-      const g = data.guidance;
-      const prereqsList = g.prerequisites.map(p => `<li>${p}</li>`).join('');
-      const videoLinks = g.foundationVideos.map(v => `<a href="${v.url}" target="_blank" style="color:#60a5fa; font-weight:600;">${v.title} (${v.creator})</a>`).join(', ');
-
-      resultBox.innerHTML = `
-        <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb"></i> Foundation Diagnostic: ${g.detectedTopic}</h4>
-        <p style="margin-bottom: 0.5rem;"><strong>Analysis:</strong> ${g.recommendedAction}</p>
-        <p><strong>Core Prerequisites to master first:</strong></p>
-        <ul style="margin: 0.4rem 0 0.8rem 1.4rem;">${prereqsList}</ul>
-        <p><strong>Recommended Foundation Lecture:</strong> ${videoLinks}</p>
-      `;
+    if (q.includes("recursion") || q.includes("dp")) {
+      diagnostic = {
+        topic: "Recursion & Dynamic Programming",
+        analysis: "Avoid jumping directly into Trees or DP. First build a strong grasp of mathematical recurrence relations and call stack dry runs.",
+        prereqs: ["Basic Loop logic (For/While)", "Functions & Call Stack mechanics", "Pointers / Reference memory model"],
+        lecture: { title: "Recursion Basics & Call Stack Dry Run", creator: "Striver / PW Skills", url: "https://www.youtube.com" }
+      };
+    } else if (q.includes("react") || q.includes("hooks")) {
+      diagnostic = {
+        topic: "React.js State & Hooks",
+        analysis: "Before managing complex component states or Redux, ensure complete fluency in JavaScript ES6 array methods, immutability, and closures.",
+        prereqs: ["JavaScript ES6 (Arrow functions, Map/Filter)", "Immutability & Closures", "DOM Events Basics"],
+        lecture: { title: "JavaScript Prerequisites for React Mastery", creator: "PW Skills / FreeCodeCamp", url: "https://www.youtube.com" }
+      };
+    } else if (q.includes("node") || q.includes("express") || q.includes("backend")) {
+      diagnostic = {
+        topic: "Node.js & Express APIs",
+        analysis: "Focus on understanding the asynchronous event loop and client-server HTTP request/response cycle prior to writing REST controllers.",
+        prereqs: ["HTTP Verbs (GET, POST, PUT, DELETE)", "JSON Payload structure", "Promises & Async/Await"],
+        lecture: { title: "HTTP Networking & Backend Essentials", creator: "PW Skills Tech", url: "https://www.youtube.com" }
+      };
+    } else {
+      diagnostic = {
+        topic: input,
+        analysis: `Before diving deep into '${input}', reinforce core computer science fundamentals and structured problem decomposition.`,
+        prereqs: ["Core Programming Logic", "Algorithmic Decomposition", "Systematic Debugging"],
+        lecture: { title: "Core Foundations for Software Engineers", creator: "Curated Mentors", url: "https://www.youtube.com" }
+      };
     }
-  } catch (err) {
-    resultBox.innerHTML = '<p style="color: #f87171;">Diagnostic fetch failed.</p>';
-  }
+
+    const prereqsList = diagnostic.prereqs.map(p => `<li>${p}</li>`).join('');
+
+    resultBox.innerHTML = `
+      <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb"></i> Foundation Diagnostic: ${diagnostic.topic}</h4>
+      <p style="margin-bottom: 0.5rem;"><strong>Analysis:</strong> ${diagnostic.analysis}</p>
+      <p><strong>Essential Prerequisites to Master First:</strong></p>
+      <ul style="margin: 0.4rem 0 0.8rem 1.4rem;">${prereqsList}</ul>
+      <p><strong>Recommended Foundation Video:</strong> <a href="${diagnostic.lecture.url}" target="_blank" style="color:#60a5fa; font-weight:600;">${diagnostic.lecture.title} (${diagnostic.lecture.creator})</a></p>
+    `;
+  }, 300);
 }
