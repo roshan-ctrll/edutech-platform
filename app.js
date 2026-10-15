@@ -1,10 +1,10 @@
 let currentMilestones = [];
 let completedMilestoneIds = new Set();
 let currentUser = null;
+let currentActiveDomain = 'web-dev';
+let currentDomainTitleText = 'Full-Stack Web Development';
 
-// ==========================================
 // 2-FACTOR MASTER SECURITY CONFIGURATION
-// ==========================================
 let DEFAULT_MASTER_KEY = "EDUTECH-KEY-2026";
 let DEFAULT_MASTER_PIN = "948210";
 
@@ -22,16 +22,93 @@ let isWarpSpeedActive = false;
 let userInteractionCount = 0;
 let isAuthForced = false;
 
+// Built-in Pomodoro State
+let pomodoroTimer = null;
+let pomodoroSeconds = 25 * 60;
+let pomodoroRunning = false;
+let pomodoroIsBreak = false;
+
+// Milestone Quizzes Bank
+const milestoneQuizzes = {
+  'm1': [
+    {
+      q: "HTML me semantic container element kaunsa hai?",
+      opts: ["<div>", "<section>", "<span>", "<font>"],
+      ans: 1,
+      exp: "'<section>' ek semantic HTML5 tag hai jo meaning define karta hai."
+    },
+    {
+      q: "CSS Flexbox me main axis ke along items align karne ke liye kya use hota hai?",
+      opts: ["align-items", "justify-content", "align-content", "flex-wrap"],
+      ans: 1,
+      exp: "'justify-content' hamesha main axis par alignment control karta hai."
+    }
+  ],
+  'm2': [
+    {
+      q: "JavaScript ES6 me immutable variable declare karne ke liye kya use karte hain?",
+      opts: ["var", "let", "const", "def"],
+      ans: 2,
+      exp: "'const' se variable re-assign nahi ho sakta."
+    },
+    {
+      q: "Async operations handle karne ke liye modern JS me kya use hota hai?",
+      opts: ["async/await", "goto", "sleep()", "thread.start()"],
+      ans: 0,
+      exp: "'async/await' promises ko readable synchronous style me handle karta hai."
+    }
+  ],
+  'm3': [
+    {
+      q: "React component me state manage karne ke liye kaunsa basic hook use hota hai?",
+      opts: ["useEffect", "useMemo", "useState", "useRef"],
+      ans: 2,
+      exp: "'useState' hook local component state store aur update karta hai."
+    },
+    {
+      q: "Side-effects jaise API calls ya DOM updates ke liye kaunsa hook use hota hai?",
+      opts: ["useEffect", "useReducer", "useCallback", "useState"],
+      ans: 0,
+      exp: "'useEffect' component ke lifecycle side-effects execute karta hai."
+    }
+  ],
+  'm4': [
+    {
+      q: "Node.js me backend REST APIs create karne ke liye sabse popular web framework kaunsa hai?",
+      opts: ["Express.js", "Django", "Spring Boot", "Laravel"],
+      ans: 0,
+      exp: "Express.js lightweight aur fast framework hai jo REST routes handle karta hai."
+    },
+    {
+      q: "HTTP Request ke body data ko parse karne ke liye kaunsa middleware use hota hai?",
+      opts: ["express.static()", "express.json()", "cors()", "morgan()"],
+      ans: 1,
+      exp: "'express.json()' incoming request ke JSON payload ko parse karta hai."
+    }
+  ],
+  'm5': [
+    {
+      q: "MongoDB kis type ka database system hai?",
+      opts: ["Relational SQL", "NoSQL Document-oriented", "Graph Only", "Flat file"],
+      ans: 1,
+      exp: "MongoDB BSON/JSON-like documents store karta hai."
+    },
+    {
+      q: "Mongoose me database schema define karne ke liye kya use hota hai?",
+      opts: ["new mongoose.Schema()", "mongoose.table()", "mongoose.sql()", "mongoose.create()"],
+      ans: 0,
+      exp: "'mongoose.Schema' collection structure aur data types define karta hai."
+    }
+  ]
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Initialize credentials & active user session
   initAdminCredentials();
   checkAuthSession();
 
-  // 2. Initialize 3D Engine (Background + Foreground)
   initBackground3D();
   initForeground3D();
 
-  // 3. Load saved milestone checklist state
   const savedState = localStorage.getItem('edutech_completed_milestones');
   if (savedState) {
     try {
@@ -41,7 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. Form listener for career track changes
   const roadmapForm = document.getElementById('roadmapForm');
   if (roadmapForm) {
     roadmapForm.addEventListener('submit', (e) => {
@@ -52,15 +128,249 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Default initial load
   loadTrackWith3DTransition('web-dev', 'beginner');
-
-  // 6. Set up 2-Click Mandatory Visitor Gate
   setupTwoClickGate();
+  updatePomodoroDisplay();
 });
 
 /* =========================================================
-   CREDENTIAL INITIALIZATION
+   FEATURE 1: IN-WEBSITE VIDEO PLAYER MODAL (NO REDIRECT)
+   ========================================================= */
+function playVideoModal(videoUrl, title, creator) {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoPlayerIframe');
+  const titleEl = document.getElementById('videoModalTitle');
+  const creatorEl = document.getElementById('videoModalCreator');
+
+  if (titleEl) titleEl.textContent = title;
+  if (creatorEl) creatorEl.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> ${creator}`;
+
+  // Safe YouTube embed logic
+  let embedUrl = "https://www.youtube.com/embed/mJgBOIoGihA?autoplay=1";
+  if (videoUrl.includes("watch?v=")) {
+    const vidId = videoUrl.split("watch?v=")[1].split("&")[0];
+    embedUrl = `https://www.youtube.com/embed/${vidId}?autoplay=1`;
+  } else if (videoUrl.includes("youtu.be/")) {
+    const vidId = videoUrl.split("youtu.be/")[1].split("?")[0];
+    embedUrl = `https://www.youtube.com/embed/${vidId}?autoplay=1`;
+  }
+
+  if (iframe) iframe.src = embedUrl;
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const iframe = document.getElementById('videoPlayerIframe');
+  if (iframe) iframe.src = ""; // Stop audio/video instantly
+  if (modal) modal.style.display = 'none';
+}
+
+/* =========================================================
+   FEATURE 2: AUTO CERTIFICATE GENERATOR WITH CONFETTI
+   ========================================================= */
+function checkCertificateEligibility(completedCount, totalCount) {
+  const banner = document.getElementById('certClaimBanner');
+  if (totalCount > 0 && completedCount === totalCount) {
+    if (banner) banner.style.display = 'flex';
+    triggerConfetti();
+  } else {
+    if (banner) banner.style.display = 'none';
+  }
+}
+
+function openCertificateModal() {
+  const modal = document.getElementById('certificateModal');
+  const nameEl = document.getElementById('certStudentName');
+  const trackEl = document.getElementById('certCourseTrack');
+  const dateEl = document.getElementById('certIssueDate');
+  const idEl = document.getElementById('certUniqueID');
+
+  const studentName = currentUser ? currentUser.name : "Alex Sharma";
+  if (nameEl) nameEl.textContent = studentName;
+  if (trackEl) trackEl.textContent = currentDomainTitleText;
+  
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  if (dateEl) dateEl.textContent = dateStr;
+
+  const randomHash = Math.random().toString(36).substring(2, 7).toUpperCase();
+  if (idEl) idEl.textContent = `EDU-2026-${randomHash}`;
+
+  triggerConfetti();
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeCertificateModal() {
+  const modal = document.getElementById('certificateModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function printCertificate() {
+  window.print();
+}
+
+// Built-in Pure HTML5 Canvas Confetti Engine (No External CDN Dependency)
+function triggerConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = [];
+  const numberOfPieces = 150;
+  const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6'];
+
+  for (let i = 0; i < numberOfPieces; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      rotation: Math.random() * 360,
+      size: Math.random() * 8 + 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: Math.random() * 3 + 2,
+      oscillationSpeed: Math.random() * 0.05 + 0.02
+    });
+  }
+
+  let frame = 0;
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.speed;
+      p.rotation += 2;
+      ctx.save();
+      ctx.fillStyle = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.5);
+      ctx.restore();
+    });
+
+    frame++;
+    if (frame < 180) {
+      requestAnimationFrame(update);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  update();
+}
+
+/* =========================================================
+   FEATURE 3: BUILT-IN POMODORO STUDY TIMER (25m / 5m)
+   ========================================================= */
+function togglePomodoro() {
+  const startBtn = document.getElementById('pomoStartBtn');
+  if (pomodoroRunning) {
+    clearInterval(pomodoroTimer);
+    pomodoroRunning = false;
+    if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+  } else {
+    pomodoroRunning = true;
+    if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    pomodoroTimer = setInterval(() => {
+      if (pomodoroSeconds > 0) {
+        pomodoroSeconds--;
+        updatePomodoroDisplay();
+      } else {
+        clearInterval(pomodoroTimer);
+        pomodoroRunning = false;
+        alert(pomodoroIsBreak ? "Break over! Time to focus." : "Focus session completed! Take a 5-minute break.");
+        switchPomodoroMode();
+      }
+    }, 1000);
+  }
+}
+
+function resetPomodoro() {
+  clearInterval(pomodoroTimer);
+  pomodoroRunning = false;
+  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
+  const startBtn = document.getElementById('pomoStartBtn');
+  if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+  updatePomodoroDisplay();
+}
+
+function switchPomodoroMode() {
+  pomodoroIsBreak = !pomodoroIsBreak;
+  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
+  const modeLabel = document.getElementById('pomoModeLabel');
+  if (modeLabel) {
+    modeLabel.textContent = pomodoroIsBreak ? "Coffee & Rest Break (5m)" : "Deep Focus Session (25m)";
+    modeLabel.style.color = pomodoroIsBreak ? "#34d399" : "#a78bfa";
+  }
+  resetPomodoro();
+}
+
+function updatePomodoroDisplay() {
+  const display = document.getElementById('pomoTimerDisplay');
+  const mins = Math.floor(pomodoroSeconds / 60);
+  const secs = pomodoroSeconds % 60;
+  if (display) {
+    display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+}
+
+/* =========================================================
+   FEATURE 4: MILESTONE MINI QUIZZES
+   ========================================================= */
+function toggleMilestoneQuiz(mId) {
+  const box = document.getElementById(`quiz-box-${mId}`);
+  if (!box) return;
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+
+function handleQuizAnswer(btn, isCorrect, exp) {
+  const parent = btn.parentElement;
+  const allBtns = parent.querySelectorAll('.quiz-opt-btn');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    b.style.pointerEvents = 'none';
+  });
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+  }
+
+  const expBox = document.createElement('div');
+  expBox.style.fontSize = '0.74rem';
+  expBox.style.marginTop = '0.4rem';
+  expBox.style.color = isCorrect ? '#86efac' : '#fca5a5';
+  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${exp}`;
+  parent.parentElement.appendChild(expBox);
+}
+
+/* =========================================================
+   FEATURE 5: PERSONAL MILESTONE NOTES SCRATCHPAD
+   ========================================================= */
+function toggleMilestoneNotes(mId) {
+  const box = document.getElementById(`notes-box-${mId}`);
+  if (!box) return;
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+}
+
+function autoSaveMilestoneNote(mId) {
+  const textarea = document.getElementById(`note-text-${mId}`);
+  const statusEl = document.getElementById(`note-status-${mId}`);
+  if (!textarea) return;
+
+  const content = textarea.value;
+  localStorage.setItem(`edutech_notes_${mId}`, content);
+
+  if (statusEl) {
+    statusEl.innerHTML = '<i class="fa-solid fa-check"></i> Saved to browser storage.';
+    setTimeout(() => {
+      statusEl.innerHTML = '<i class="fa-solid fa-cloud"></i> Notes automatically synchronized.';
+    }, 2000);
+  }
+}
+
+/* =========================================================
+   AUTHENTICATION & VISITOR GATE (Bypassed for Admin)
    ========================================================= */
 function initAdminCredentials() {
   const customKey = localStorage.getItem('edutech_custom_master_key');
@@ -69,19 +379,12 @@ function initAdminCredentials() {
   if (customPin) DEFAULT_MASTER_PIN = customPin;
 }
 
-/* =========================================================
-   2-CLICK MANDATORY VISITOR GATE
-   ========================================================= */
 function setupTwoClickGate() {
   document.addEventListener('click', (e) => {
-    // If admin is active OR user is logged in OR gate disabled: DO NOT INTERRUPT
     if (isAdmin || currentUser || !isGateEnabled) return;
-
-    // Do not count clicks inside auth/admin modals or navbar
-    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('.sub-account-bar')) return;
+    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('#videoModal') || e.target.closest('#certificateModal') || e.target.closest('.sub-account-bar')) return;
 
     userInteractionCount++;
-
     if (userInteractionCount >= 2) {
       openAuthModal('signup', true);
     }
@@ -96,9 +399,6 @@ function handleBackdropClick() {
   closeAuthModal();
 }
 
-/* =========================================================
-   USER AUTHENTICATION (LOGIN & SIGNUP)
-   ========================================================= */
 function checkAuthSession() {
   const storedUser = localStorage.getItem('edutech_user');
   const storedToken = localStorage.getItem('edutech_admin_token');
@@ -138,8 +438,7 @@ function checkAuthSession() {
 }
 
 function openAuthModal(tab = 'signup', forced = false) {
-  if (isAdmin) return; // Do not disturb admin
-
+  if (isAdmin) return;
   isAuthForced = forced;
   const modal = document.getElementById('authModal');
   const closeBtn = document.getElementById('authCloseBtn');
@@ -212,7 +511,6 @@ async function handleLogin(e) {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-
     if (data.success) {
       onAuthSuccess(data.user, 'Welcome back!');
     } else {
@@ -238,7 +536,6 @@ async function handleSignup(e) {
       body: JSON.stringify({ name, email, password, goal })
     });
     const data = await res.json();
-
     if (data.success) {
       saveUserToRoster(data.user);
       onAuthSuccess(data.user, 'Account created successfully!');
@@ -293,7 +590,6 @@ function openAdminModal() {
 
   if (alertBox) alertBox.style.display = 'none';
 
-  // Check lockout
   const now = Date.now();
   if (now < lockoutUntil) {
     const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
@@ -458,7 +754,6 @@ function toggleVisitorGate() {
 function renderAdminStats() {
   const usersEl = document.getElementById('adminStatUsers');
   const milestonesEl = document.getElementById('adminStatMilestones');
-  const userListEl = document.getElementById('adminUserList');
 
   let userRoster = [];
   try {
@@ -468,22 +763,6 @@ function renderAdminStats() {
 
   if (usersEl) usersEl.textContent = Math.max(1, userRoster.length + 1);
   if (milestonesEl) milestonesEl.textContent = completedMilestoneIds.size;
-
-  if (userListEl) {
-    if (userRoster.length === 0) {
-      userListEl.innerHTML = `
-        <div style="font-size: 0.78rem; color: #94a3b8; padding: 0.2rem;">
-          <i class="fa-solid fa-crown" style="color: #c084fc;"></i> <strong>Master Admin</strong> (admin@edutech.io) — Active Session
-        </div>
-      `;
-    } else {
-      userListEl.innerHTML = userRoster.map(u => `
-        <div style="font-size: 0.78rem; color: #cbd5e1; padding: 0.3rem; border-bottom: 1px solid rgba(255,255,255,0.06);">
-          <i class="fa-solid fa-user" style="color:#60a5fa;"></i> <strong>${u.name}</strong> (${u.email}) - Track: ${u.goal}
-        </div>
-      `).join('');
-    }
-  }
 }
 
 /* =========================================================
@@ -507,16 +786,6 @@ function navigateToSection3D(targetId, event) {
   void targetElement.offsetWidth;
   targetElement.classList.add('section-3d-unfold');
   targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  if (targetId === 'features') {
-    const badges = targetElement.querySelectorAll('.custom-logo-badge');
-    badges.forEach((b, idx) => {
-      setTimeout(() => {
-        b.style.transform = 'translateY(-8px) scale(1.2)';
-        setTimeout(() => { b.style.transform = ''; }, 350);
-      }, idx * 100);
-    });
-  }
 }
 
 function triggerHyperdriveWarp() {
@@ -689,18 +958,22 @@ function buildForegroundMesh(domain) {
 }
 
 function loadTrackWith3DTransition(domain, level = 'beginner') {
+  currentActiveDomain = domain;
   buildForegroundMesh(domain);
 
   const holoTitle = document.getElementById('holoTrackTitle');
   const holoDesc = document.getElementById('holoTrackDesc');
 
   if (domain === 'web-dev') {
-    if (holoTitle) holoTitle.textContent = "Full-Stack Web Development (MERN)";
+    currentDomainTitleText = "Full-Stack Web Development (MERN)";
+    if (holoTitle) holoTitle.textContent = currentDomainTitleText;
     if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport demonstrating Client-Server handshake, Component Trees, and REST-MongoDB layers.";
   } else if (domain === 'data-science') {
+    currentDomainTitleText = "Data Science, Analytics & AI/ML";
     if (holoTitle) holoTitle.textContent = "Data Science & AI Neural Core";
     if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport displaying multi-layer Neural Network synapses, Matrix computations, and Gradient Descent models.";
   } else if (domain === 'software-engineering') {
+    currentDomainTitleText = "Software Engineering & Data Structures (DSA)";
     if (holoTitle) holoTitle.textContent = "Software Engineering & DSA Architecture";
     if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport visualizing Graph Topologies, Tree Nodes, Algorithmic Complexity, and System Design.";
   }
@@ -715,201 +988,3 @@ function quickSelectTrack(domain) {
   navigateToSection3D('front-3d-section');
 }
 
-/* =========================================================
-   ROADMAP RENDERING & CHECKLIST
-   ========================================================= */
-async function fetchRoadmap(domain, level) {
-  try {
-    const response = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
-    const data = await response.json();
-
-    if (data.success) {
-      currentMilestones = data.milestones;
-      renderRoadmap(data.domain, data.description, data.milestones);
-      updateProgress();
-    }
-  } catch (error) {
-    console.error("Roadmap fetch error:", error);
-  }
-}
-
-function renderRoadmap(title, description, milestones) {
-  const currentDomainTitle = document.getElementById('currentDomainTitle');
-  const currentDomainDesc = document.getElementById('currentDomainDesc');
-  const milestonesContainer = document.getElementById('milestonesContainer');
-
-  if (currentDomainTitle) currentDomainTitle.textContent = title;
-  if (currentDomainDesc) currentDomainDesc.textContent = description;
-  if (!milestonesContainer) return;
-  milestonesContainer.innerHTML = '';
-
-  milestones.forEach((milestone) => {
-    const isCompleted = completedMilestoneIds.has(milestone.id);
-
-    const card = document.createElement('div');
-    card.className = `milestone-card ${isCompleted ? 'completed' : ''}`;
-    card.id = `card-${milestone.id}`;
-
-    const prereqHTML = milestone.prerequisites.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
-
-    const videosHTML = milestone.videos.map(v => `
-      <div class="video-item">
-        <div class="video-info">
-          <h5>${v.title}</h5>
-          <span class="video-creator"><i class="fa-solid fa-chalkboard-user"></i> ${v.creator}</span>
-          <span class="video-duration"> • ${v.duration}</span>
-        </div>
-        <a href="${v.url}" target="_blank" class="watch-btn">
-          <i class="fa-brands fa-youtube"></i> Watch Lecture
-        </a>
-      </div>
-    `).join('');
-
-    card.innerHTML = `
-      <div class="milestone-top">
-        <div class="milestone-title-area">
-          <input type="checkbox" class="custom-checkbox" id="check-${milestone.id}" 
-            ${isCompleted ? 'checked' : ''} 
-            onchange="toggleMilestoneCompletion('${milestone.id}')">
-          <div>
-            <span class="milestone-step-number">Milestone ${milestone.step}</span>
-            <h3 style="display:inline; margin-left: 0.6rem;">${milestone.title}</h3>
-          </div>
-        </div>
-        <span class="milestone-duration"><i class="fa-regular fa-clock"></i> ${milestone.duration}</span>
-      </div>
-
-      <div>
-        <strong style="font-size: 0.8rem; color: #94a3b8;">Essential Prerequisites:</strong>
-        <div class="prereq-list">${prereqHTML}</div>
-      </div>
-
-      <div style="margin-top: 1rem;">
-        <strong style="font-size: 0.82rem; color: #f8fafc;"><i class="fa-solid fa-play"></i> Curated Lectures (Physics Wallah & Top Mentors):</strong>
-        <div class="video-grid">${videosHTML}</div>
-      </div>
-    `;
-
-    milestonesContainer.appendChild(card);
-  });
-}
-
-function filterMilestones() {
-  const query = document.getElementById('milestoneSearchInput').value.toLowerCase();
-  const cards = document.querySelectorAll('.milestone-card');
-
-  cards.forEach(card => {
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(query) ? 'block' : 'none';
-  });
-}
-
-function toggleMilestoneCompletion(id) {
-  const card = document.getElementById(`card-${id}`);
-  if (completedMilestoneIds.has(id)) {
-    completedMilestoneIds.delete(id);
-    if (card) card.classList.remove('completed');
-  } else {
-    completedMilestoneIds.add(id);
-    if (card) card.classList.add('completed');
-  }
-
-  localStorage.setItem('edutech_completed_milestones', JSON.stringify(Array.from(completedMilestoneIds)));
-  updateProgress();
-}
-
-function updateProgress() {
-  if (currentMilestones.length === 0) return;
-
-  let completedCount = 0;
-  currentMilestones.forEach(m => {
-    if (completedMilestoneIds.has(m.id)) completedCount++;
-  });
-
-  const percentage = Math.round((completedCount / currentMilestones.length) * 100);
-  const pctEl = document.getElementById('progressPercentage');
-  const barEl = document.getElementById('progressBarFill');
-  const statusEl = document.getElementById('completionStatus');
-
-  if (pctEl) pctEl.textContent = `${percentage}%`;
-  if (barEl) barEl.style.width = `${percentage}%`;
-  if (statusEl) {
-    statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${completedCount} of ${currentMilestones.length} milestones finished.`;
-  }
-}
-
-/* =========================================================
-   AI PREREQUISITE ASSISTANT
-   ========================================================= */
-function openAssistantModal() {
-  const modal = document.getElementById('aiModal');
-  if (modal) modal.style.display = 'flex';
-}
-
-function closeAssistantModal() {
-  const modal = document.getElementById('aiModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function setQuickTopic(topic) {
-  const input = document.getElementById('assistantInput');
-  if (input) {
-    input.value = topic;
-    queryAIAssistant();
-  }
-}
-
-function queryAIAssistant() {
-  const input = document.getElementById('assistantInput').value.trim();
-  const resultBox = document.getElementById('assistantResult');
-
-  if (!input) return;
-
-  resultBox.style.display = 'block';
-  resultBox.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Analyzing foundation bottlenecks...</p>';
-
-  setTimeout(() => {
-    const q = input.toLowerCase();
-    let diagnostic = {};
-
-    if (q.includes("recursion") || q.includes("dp")) {
-      diagnostic = {
-        topic: "Recursion & Dynamic Programming",
-        analysis: "Avoid jumping directly into Trees or DP. First build a strong grasp of mathematical recurrence relations and call stack dry runs.",
-        prereqs: ["Basic Loop logic (For/While)", "Functions & Call Stack mechanics", "Pointers / Reference memory model"],
-        lecture: { title: "Recursion Basics & Call Stack Dry Run", creator: "Striver / PW Skills", url: "https://www.youtube.com" }
-      };
-    } else if (q.includes("react") || q.includes("hooks")) {
-      diagnostic = {
-        topic: "React.js State & Hooks",
-        analysis: "Before managing complex component states or Redux, ensure complete fluency in JavaScript ES6 array methods, immutability, and closures.",
-        prereqs: ["JavaScript ES6 (Arrow functions, Map/Filter)", "Immutability & Closures", "DOM Events Basics"],
-        lecture: { title: "JavaScript Prerequisites for React Mastery", creator: "PW Skills / FreeCodeCamp", url: "https://www.youtube.com" }
-      };
-    } else if (q.includes("node") || q.includes("express") || q.includes("backend")) {
-      diagnostic = {
-        topic: "Node.js & Express APIs",
-        analysis: "Focus on understanding the asynchronous event loop and client-server HTTP request/response cycle prior to writing REST controllers.",
-        prereqs: ["HTTP Verbs (GET, POST, PUT, DELETE)", "JSON Payload structure", "Promises & Async/Await"],
-        lecture: { title: "HTTP Networking & Backend Essentials", creator: "PW Skills Tech", url: "https://www.youtube.com" }
-      };
-    } else {
-      diagnostic = {
-        topic: input,
-        analysis: `Before diving deep into '${input}', reinforce core computer science fundamentals and structured problem decomposition.`,
-        prereqs: ["Core Programming Logic", "Algorithmic Decomposition", "Systematic Debugging"],
-        lecture: { title: "Core Foundations for Software Engineers", creator: "Curated Mentors", url: "https://www.youtube.com" }
-      };
-    }
-
-    const prereqsList = diagnostic.prereqs.map(p => `<li>${p}</li>`).join('');
-
-    resultBox.innerHTML = `
-      <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb"></i> Foundation Diagnostic: ${diagnostic.topic}</h4>
-      <p style="margin-bottom: 0.5rem;"><strong>Analysis:</strong> ${diagnostic.analysis}</p>
-      <p><strong>Essential Prerequisites to Master First:</strong></p>
-      <ul style="margin: 0.4rem 0 0.8rem 1.4rem;">${prereqsList}</ul>
-      <p><strong>Recommended Foundation Video:</strong> <a href="${diagnostic.lecture.url}" target="_blank" style="color:#60a5fa; font-weight:600;">${diagnostic.lecture.title} (${diagnostic.lecture.creator})</a></p>
-    `;
-  }, 300);
-}
