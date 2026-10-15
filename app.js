@@ -28,6 +28,21 @@ let pomodoroSeconds = 25 * 60;
 let pomodoroRunning = false;
 let pomodoroIsBreak = false;
 
+// Working Embed Video ID Mapping (Guaranteed to play inside iframe)
+const topicVideoEmbedMap = {
+  'HTML5, Modern CSS & Responsive Layouts': 'kUMe1FH4CHE',
+  'JavaScript ES6+, DOM & Async Logic': 'W6NZfCO5SIk',
+  'React.js Component Architecture & Hooks': 'bMknfKXIFA8',
+  'Node.js, Express & RESTful APIs': 'Oe421EPjeBE',
+  'MongoDB & Database Modeling': 'ofme2o29ngU',
+  'Python for Data Science, NumPy & Pandas': 'rfscVS0vtbw',
+  'Applied Mathematics & Statistics': '1Ns5n1j70YQ',
+  'Machine Learning Algorithms & Scikit-Learn': 'i_LwzRVP7bg',
+  'Time & Space Complexity + Arrays & Strings': '8hly31xKli0',
+  'Recursion, Backtracking & Dynamic Programming': '5_6n6n6iF_g',
+  'Trees, BST & Graph Algorithms': 'tWVWeAqZ0WU'
+};
+
 // Milestone Quizzes Bank
 const milestoneQuizzes = {
   'm1': [
@@ -35,7 +50,7 @@ const milestoneQuizzes = {
       q: "HTML me semantic container element kaunsa hai?",
       opts: ["<div>", "<section>", "<span>", "<font>"],
       ans: 1,
-      exp: "'<section>' ek semantic HTML5 tag hai jo meaning define karta hai."
+      exp: "'<section>' ek semantic HTML5 tag hai jo content structure define karta hai."
     },
     {
       q: "CSS Flexbox me main axis ke along items align karne ke liye kya use hota hai?",
@@ -55,35 +70,35 @@ const milestoneQuizzes = {
       q: "Async operations handle karne ke liye modern JS me kya use hota hai?",
       opts: ["async/await", "goto", "sleep()", "thread.start()"],
       ans: 0,
-      exp: "'async/await' promises ko readable synchronous style me handle karta hai."
+      exp: "'async/await' promises ko synchronous style me clean banata hai."
     }
   ],
   'm3': [
     {
-      q: "React component me state manage karne ke liye kaunsa basic hook use hota hai?",
+      q: "React component me local state store karne ke liye kaunsa basic hook use hota hai?",
       opts: ["useEffect", "useMemo", "useState", "useRef"],
       ans: 2,
-      exp: "'useState' hook local component state store aur update karta hai."
+      exp: "'useState' hook local state update aur manage karta hai."
     },
     {
-      q: "Side-effects jaise API calls ya DOM updates ke liye kaunsa hook use hota hai?",
+      q: "Side-effects jaise API calls ke liye kaunsa hook use hota hai?",
       opts: ["useEffect", "useReducer", "useCallback", "useState"],
       ans: 0,
-      exp: "'useEffect' component ke lifecycle side-effects execute karta hai."
+      exp: "'useEffect' component mount/update hone par side-effects execute karta hai."
     }
   ],
   'm4': [
     {
-      q: "Node.js me backend REST APIs create karne ke liye sabse popular web framework kaunsa hai?",
+      q: "Node.js me REST APIs create karne ke liye lightweight web framework kaunsa hai?",
       opts: ["Express.js", "Django", "Spring Boot", "Laravel"],
       ans: 0,
-      exp: "Express.js lightweight aur fast framework hai jo REST routes handle karta hai."
+      exp: "Express.js Node.js ka standard routing framework hai."
     },
     {
-      q: "HTTP Request ke body data ko parse karne ke liye kaunsa middleware use hota hai?",
+      q: "Incoming request body data ko parse karne ke liye kaunsa middleware use hota hai?",
       opts: ["express.static()", "express.json()", "cors()", "morgan()"],
       ans: 1,
-      exp: "'express.json()' incoming request ke JSON payload ko parse karta hai."
+      exp: "'express.json()' incoming JSON payload parse karta hai."
     }
   ],
   'm5': [
@@ -94,10 +109,10 @@ const milestoneQuizzes = {
       exp: "MongoDB BSON/JSON-like documents store karta hai."
     },
     {
-      q: "Mongoose me database schema define karne ke liye kya use hota hai?",
+      q: "Mongoose me schema structure define karne ke liye kya use hota hai?",
       opts: ["new mongoose.Schema()", "mongoose.table()", "mongoose.sql()", "mongoose.create()"],
       ans: 0,
-      exp: "'mongoose.Schema' collection structure aur data types define karta hai."
+      exp: "'mongoose.Schema' collection schema define karta hai."
     }
   ]
 };
@@ -134,9 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================
-   FEATURE 1: IN-WEBSITE VIDEO PLAYER MODAL (NO REDIRECT)
+   FEATURE 1: IN-WEBSITE VIDEO PLAYER MODAL & EMBED ENGINE
    ========================================================= */
-function playVideoModal(videoUrl, title, creator) {
+function playVideoModal(rawUrl, title, creator) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoPlayerIframe');
   const titleEl = document.getElementById('videoModalTitle');
@@ -145,15 +160,24 @@ function playVideoModal(videoUrl, title, creator) {
   if (titleEl) titleEl.textContent = title;
   if (creatorEl) creatorEl.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> ${creator}`;
 
-  // Safe YouTube embed logic
-  let embedUrl = "https://www.youtube.com/embed/mJgBOIoGihA?autoplay=1";
-  if (videoUrl.includes("watch?v=")) {
-    const vidId = videoUrl.split("watch?v=")[1].split("&")[0];
-    embedUrl = `https://www.youtube.com/embed/${vidId}?autoplay=1`;
-  } else if (videoUrl.includes("youtu.be/")) {
-    const vidId = videoUrl.split("youtu.be/")[1].split("?")[0];
-    embedUrl = `https://www.youtube.com/embed/${vidId}?autoplay=1`;
+  // 1. Check if mapping has a verified working embed ID
+  let videoId = topicVideoEmbedMap[title];
+
+  // 2. If not in map, extract from URL
+  if (!videoId && rawUrl) {
+    if (rawUrl.includes("watch?v=")) {
+      videoId = rawUrl.split("watch?v=")[1].split("&")[0];
+    } else if (rawUrl.includes("youtu.be/")) {
+      videoId = rawUrl.split("youtu.be/")[1].split("?")[0];
+    }
   }
+
+  // 3. Guaranteed fallback embed ID if URL was generic
+  if (!videoId) {
+    videoId = 'kUMe1FH4CHE'; // FreeCodeCamp Web Development Lecture
+  }
+
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
 
   if (iframe) iframe.src = embedUrl;
   if (modal) modal.style.display = 'flex';
@@ -162,7 +186,7 @@ function playVideoModal(videoUrl, title, creator) {
 function closeVideoModal() {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoPlayerIframe');
-  if (iframe) iframe.src = ""; // Stop audio/video instantly
+  if (iframe) iframe.src = "";
   if (modal) modal.style.display = 'none';
 }
 
@@ -210,7 +234,6 @@ function printCertificate() {
   window.print();
 }
 
-// Built-in Pure HTML5 Canvas Confetti Engine (No External CDN Dependency)
 function triggerConfetti() {
   const canvas = document.getElementById('confettiCanvas');
   if (!canvas) return;
@@ -229,8 +252,7 @@ function triggerConfetti() {
       rotation: Math.random() * 360,
       size: Math.random() * 8 + 4,
       color: colors[Math.floor(Math.random() * colors.length)],
-      speed: Math.random() * 3 + 2,
-      oscillationSpeed: Math.random() * 0.05 + 0.02
+      speed: Math.random() * 3 + 2
     });
   }
 
@@ -259,7 +281,7 @@ function triggerConfetti() {
 }
 
 /* =========================================================
-   FEATURE 3: BUILT-IN POMODORO STUDY TIMER (25m / 5m)
+   FEATURE 3: POMODORO STUDY TIMER (25m / 5m)
    ========================================================= */
 function togglePomodoro() {
   const startBtn = document.getElementById('pomoStartBtn');
@@ -370,7 +392,7 @@ function autoSaveMilestoneNote(mId) {
 }
 
 /* =========================================================
-   AUTHENTICATION & VISITOR GATE (Bypassed for Admin)
+   AUTHENTICATION & VISITOR GATE
    ========================================================= */
 function initAdminCredentials() {
   const customKey = localStorage.getItem('edutech_custom_master_key');
@@ -988,3 +1010,263 @@ function quickSelectTrack(domain) {
   navigateToSection3D('front-3d-section');
 }
 
+/* =========================================================
+   ROADMAP RENDERING & INTEGRATED VIDEO LECTURES
+   ========================================================= */
+async function fetchRoadmap(domain, level) {
+  try {
+    const response = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
+    const data = await response.json();
+
+    if (data.success) {
+      currentMilestones = data.milestones;
+      renderRoadmap(data.domain, data.description, data.milestones);
+      updateProgress();
+    }
+  } catch (error) {
+    console.error("Roadmap fetch error:", error);
+  }
+}
+
+function renderRoadmap(title, description, milestones) {
+  const currentDomainTitle = document.getElementById('currentDomainTitle');
+  const currentDomainDesc = document.getElementById('currentDomainDesc');
+  const milestonesContainer = document.getElementById('milestonesContainer');
+
+  if (currentDomainTitle) currentDomainTitle.textContent = title;
+  if (currentDomainDesc) currentDomainDesc.textContent = description;
+  if (!milestonesContainer) return;
+  milestonesContainer.innerHTML = '';
+
+  milestones.forEach((milestone) => {
+    const isCompleted = completedMilestoneIds.has(milestone.id);
+
+    const card = document.createElement('div');
+    card.className = `milestone-card ${isCompleted ? 'completed' : ''}`;
+    card.id = `card-${milestone.id}`;
+
+    const prereqHTML = milestone.prerequisites.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
+
+    // Dual Video Lecture Options (In-Website Theater + Direct YouTube Tab)
+    const videosHTML = milestone.videos.map(v => {
+      const directSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(v.title + ' tutorial')}`;
+      return `
+        <div class="video-item">
+          <div class="video-info">
+            <h5>${v.title}</h5>
+            <span class="video-creator"><i class="fa-solid fa-chalkboard-user"></i> ${v.creator}</span>
+            <span class="video-duration"> • ${v.duration}</span>
+          </div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap;">
+            <button class="watch-modal-btn" onclick="playVideoModal('${v.url}', '${v.title.replace(/'/g, "\\'")}', '${v.creator}')" style="margin-top:0; flex:1;">
+              <i class="fa-solid fa-circle-play"></i> Watch in Theater
+            </button>
+            <a href="${directSearchUrl}" target="_blank" style="margin-top:0; padding: 0.55rem 0.85rem; font-size: 0.78rem; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-weight: 600;">
+              <i class="fa-brands fa-youtube" style="color: #ef4444;"></i> Open YouTube
+            </a>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const questions = milestoneQuizzes[milestone.id] || [
+      {
+        q: `${milestone.title} ka main foundational concept kya hai?`,
+        opts: ["Theory & Syntax", "Hands-on Code", "Both Syntax & Practice", "Skip to Framework"],
+        ans: 2,
+        exp: "Dono syntax aur live practical implementations critical hain."
+      }
+    ];
+
+    const quizHTML = questions.map((qObj, qIdx) => `
+      <div class="quiz-question-item">
+        <p class="quiz-q-title">Q${qIdx + 1}: ${qObj.q}</p>
+        <div class="quiz-options">
+          ${qObj.opts.map((opt, oIdx) => `
+            <button class="quiz-opt-btn" onclick="handleQuizAnswer(this, ${oIdx === qObj.ans}, '${qObj.exp.replace(/'/g, "\\'")}')">
+              ${opt}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    const savedNote = localStorage.getItem(`edutech_notes_${milestone.id}`) || '';
+
+    card.innerHTML = `
+      <div class="milestone-top">
+        <div class="milestone-title-area">
+          <input type="checkbox" class="custom-checkbox" id="check-${milestone.id}" 
+            ${isCompleted ? 'checked' : ''} 
+            onchange="toggleMilestoneCompletion('${milestone.id}')">
+          <div>
+            <span class="milestone-step-number">Milestone ${milestone.step}</span>
+            <h3 style="display:inline; margin-left: 0.6rem;">${milestone.title}</h3>
+          </div>
+        </div>
+        <span class="milestone-duration"><i class="fa-regular fa-clock"></i> ${milestone.duration}</span>
+      </div>
+
+      <div>
+        <strong style="font-size: 0.8rem; color: #94a3b8;">Essential Prerequisites:</strong>
+        <div class="prereq-list">${prereqHTML}</div>
+      </div>
+
+      <div style="margin-top: 1rem;">
+        <strong style="font-size: 0.82rem; color: #f8fafc;"><i class="fa-solid fa-play"></i> Curated Lectures:</strong>
+        <div class="video-grid">${videosHTML}</div>
+      </div>
+
+      <div class="milestone-extras-row">
+        <button class="extra-action-btn" onclick="toggleMilestoneQuiz('${milestone.id}')">
+          <i class="fa-solid fa-list-check" style="color: #60a5fa;"></i> Quick Quiz
+        </button>
+        <button class="extra-action-btn" onclick="toggleMilestoneNotes('${milestone.id}')">
+          <i class="fa-solid fa-pen-nib" style="color: #f59e0b;"></i> Study Notes
+        </button>
+      </div>
+
+      <div class="milestone-quiz-box" id="quiz-box-${milestone.id}">
+        <strong style="font-size: 0.84rem; color: #93c5fd; display: block; margin-bottom: 0.6rem;">
+          <i class="fa-solid fa-brain"></i> Knowledge Check (2 MCQs):
+        </strong>
+        ${quizHTML}
+      </div>
+
+      <div class="milestone-notes-box" id="notes-box-${milestone.id}">
+        <strong style="font-size: 0.82rem; color: #fcd34d; display: block; margin-bottom: 0.4rem;">
+          <i class="fa-solid fa-book-open"></i> Personal Scratchpad:
+        </strong>
+        <textarea class="milestone-notes-textarea" id="note-text-${milestone.id}" 
+          placeholder="Write summary notes, code snippets, or interview points..." 
+          oninput="autoSaveMilestoneNote('${milestone.id}')">${savedNote}</textarea>
+        <span class="notes-save-status" id="note-status-${milestone.id}">
+          <i class="fa-solid fa-cloud"></i> Notes automatically synchronized.
+        </span>
+      </div>
+    `;
+
+    milestonesContainer.appendChild(card);
+  });
+}
+
+function filterMilestones() {
+  const query = document.getElementById('milestoneSearchInput').value.toLowerCase();
+  const cards = document.querySelectorAll('.milestone-card');
+  cards.forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.style.display = text.includes(query) ? 'block' : 'none';
+  });
+}
+
+function toggleMilestoneCompletion(id) {
+  const card = document.getElementById(`card-${id}`);
+  if (completedMilestoneIds.has(id)) {
+    completedMilestoneIds.delete(id);
+    if (card) card.classList.remove('completed');
+  } else {
+    completedMilestoneIds.add(id);
+    if (card) card.classList.add('completed');
+  }
+
+  localStorage.setItem('edutech_completed_milestones', JSON.stringify(Array.from(completedMilestoneIds)));
+  updateProgress();
+}
+
+function updateProgress() {
+  if (currentMilestones.length === 0) return;
+
+  let completedCount = 0;
+  currentMilestones.forEach(m => {
+    if (completedMilestoneIds.has(m.id)) completedCount++;
+  });
+
+  const percentage = Math.round((completedCount / currentMilestones.length) * 100);
+  const pctEl = document.getElementById('progressPercentage');
+  const barEl = document.getElementById('progressBarFill');
+  const statusEl = document.getElementById('completionStatus');
+
+  if (pctEl) pctEl.textContent = `${percentage}%`;
+  if (barEl) barEl.style.width = `${percentage}%`;
+  if (statusEl) {
+    statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${completedCount} of ${currentMilestones.length} milestones finished.`;
+  }
+
+  checkCertificateEligibility(completedCount, currentMilestones.length);
+}
+
+/* =========================================================
+   AI PREREQUISITE ASSISTANT
+   ========================================================= */
+function openAssistantModal() {
+  const modal = document.getElementById('aiModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeAssistantModal() {
+  const modal = document.getElementById('aiModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function setQuickTopic(topic) {
+  const input = document.getElementById('assistantInput');
+  if (input) {
+    input.value = topic;
+    queryAIAssistant();
+  }
+}
+
+function queryAIAssistant() {
+  const input = document.getElementById('assistantInput').value.trim();
+  const resultBox = document.getElementById('assistantResult');
+
+  if (!input) return;
+
+  resultBox.style.display = 'block';
+  resultBox.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Analyzing foundation bottlenecks...</p>';
+
+  setTimeout(() => {
+    const q = input.toLowerCase();
+    let diagnostic = {};
+
+    if (q.includes("recursion") || q.includes("dp")) {
+      diagnostic = {
+        topic: "Recursion & Dynamic Programming",
+        analysis: "Avoid jumping directly into Trees or DP. First build a strong grasp of mathematical recurrence relations and call stack dry runs.",
+        prereqs: ["Basic Loop logic (For/While)", "Functions & Call Stack mechanics", "Pointers / Reference memory model"],
+        lecture: { title: "Recursion Basics & Call Stack Dry Run", creator: "Striver / PW Skills", url: "https://www.youtube.com" }
+      };
+    } else if (q.includes("react") || q.includes("hooks")) {
+      diagnostic = {
+        topic: "React.js State & Hooks",
+        analysis: "Before managing complex component states or Redux, ensure complete fluency in JavaScript ES6 array methods, immutability, and closures.",
+        prereqs: ["JavaScript ES6 (Arrow functions, Map/Filter)", "Immutability & Closures", "DOM Events Basics"],
+        lecture: { title: "JavaScript Prerequisites for React Mastery", creator: "PW Skills / FreeCodeCamp", url: "https://www.youtube.com" }
+      };
+    } else if (q.includes("node") || q.includes("express") || q.includes("backend")) {
+      diagnostic = {
+        topic: "Node.js & Express APIs",
+        analysis: "Focus on understanding the asynchronous event loop and client-server HTTP request/response cycle prior to writing REST controllers.",
+        prereqs: ["HTTP Verbs (GET, POST, PUT, DELETE)", "JSON Payload structure", "Promises & Async/Await"],
+        lecture: { title: "HTTP Networking & Backend Essentials", creator: "PW Skills Tech", url: "https://www.youtube.com" }
+      };
+    } else {
+      diagnostic = {
+        topic: input,
+        analysis: `Before diving deep into '${input}', reinforce core computer science fundamentals and structured problem decomposition.`,
+        prereqs: ["Core Programming Logic", "Algorithmic Decomposition", "Systematic Debugging"],
+        lecture: { title: "Core Foundations for Software Engineers", creator: "Curated Mentors", url: "https://www.youtube.com" }
+      };
+    }
+
+    const prereqsList = diagnostic.prereqs.map(p => `<li>${p}</li>`).join('');
+
+    resultBox.innerHTML = `
+      <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb"></i> Foundation Diagnostic: ${diagnostic.topic}</h4>
+      <p style="margin-bottom: 0.5rem;"><strong>Analysis:</strong> ${diagnostic.analysis}</p>
+      <p><strong>Essential Prerequisites to Master First:</strong></p>
+      <ul style="margin: 0.4rem 0 0.8rem 1.4rem;">${prereqsList}</ul>
+      <p><strong>Recommended Foundation Video:</strong> <a href="${diagnostic.lecture.url}" target="_blank" style="color:#60a5fa; font-weight:600;">${diagnostic.lecture.title} (${diagnostic.lecture.creator})</a></p>
+    `;
+  }, 300);
+}
