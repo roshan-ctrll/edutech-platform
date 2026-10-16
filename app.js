@@ -2,193 +2,88 @@ let currentMilestones = [];
 let completedMilestoneIds = new Set();
 let currentUser = null;
 let currentActiveDomain = 'web-dev';
-let currentDomainTitleText = 'Full-Stack Web Development';
+let currentDomainTitleText = 'Full-Stack Web Development (MERN)';
 
-// 2-FACTOR MASTER SECURITY CONFIGURATION
 let DEFAULT_MASTER_KEY = "EDUTECH-KEY-2026";
 let DEFAULT_MASTER_PIN = "948210";
-
 let isAdmin = false;
-let isGateEnabled = true;
-let failedAttempts = 0;
-let lockoutUntil = 0;
 
-// Three.js instances
 let bgScene, bgCamera, bgRenderer, bgPoints;
 let fgScene, fgCamera, fgRenderer, fgMesh, fgWireframeMesh;
-let isWarpSpeedActive = false;
 
-// 2-Click Gate Trigger Counter
-let userInteractionCount = 0;
-let isAuthForced = false;
-
-// Built-in Pomodoro State
 let pomodoroTimer = null;
 let pomodoroSeconds = 25 * 60;
 let pomodoroRunning = false;
 let pomodoroIsBreak = false;
 
-// =========================================================
-// GUARANTEED FALLBACK ROADMAPS (Video section kabhi gayab nahi hoga)
-// =========================================================
 const DEFAULT_ROADMAPS = {
   'web-dev': {
     domain: "Full-Stack Web Development (MERN)",
     description: "Step-by-step pathway from responsive frontend design to scalable backend architecture.",
     milestones: [
-      {
-        id: 'm1',
-        step: 1,
-        title: "HTML5, Modern CSS & Responsive Layouts",
-        duration: "1-2 Weeks",
-        prerequisites: ["Web Basics", "Text Editor (VS Code)", "Chrome DevTools"]
-      },
-      {
-        id: 'm2',
-        step: 2,
-        title: "JavaScript ES6+, DOM & Async Logic",
-        duration: "2-3 Weeks",
-        prerequisites: ["HTML/CSS", "Programming Basics", "Functions & Scope"]
-      },
-      {
-        id: 'm3',
-        step: 3,
-        title: "React.js Component Architecture & Hooks",
-        duration: "3-4 Weeks",
-        prerequisites: ["Modern JS (ES6)", "DOM Manipulation", "Array Methods (Map/Filter)"]
-      },
-      {
-        id: 'm4',
-        step: 4,
-        title: "Node.js, Express & RESTful APIs",
-        duration: "2-3 Weeks",
-        prerequisites: ["JavaScript Async/Await", "HTTP Methods", "JSON Basics"]
-      },
-      {
-        id: 'm5',
-        step: 5,
-        title: "MongoDB & Database Modeling",
-        duration: "2 Weeks",
-        prerequisites: ["Node.js Basics", "CRUD Operations", "Data Structures"]
-      }
+      { id: 'm1', step: 1, title: "HTML5, Modern CSS & Responsive Layouts", duration: "1-2 Weeks", prerequisites: ["Web Basics", "VS Code", "DevTools"] },
+      { id: 'm2', step: 2, title: "JavaScript ES6+, DOM & Async Logic", duration: "2-3 Weeks", prerequisites: ["HTML/CSS", "Programming Basics"] },
+      { id: 'm3', step: 3, title: "React.js Component Architecture & Hooks", duration: "3-4 Weeks", prerequisites: ["Modern JS (ES6)", "DOM Manipulation"] },
+      { id: 'm4', step: 4, title: "Node.js, Express & RESTful APIs", duration: "2-3 Weeks", prerequisites: ["Async/Await", "HTTP Methods"] },
+      { id: 'm5', step: 5, title: "MongoDB & Database Modeling", duration: "2 Weeks", prerequisites: ["Node.js Basics", "CRUD Operations"] }
     ]
   },
   'data-science': {
     domain: "Data Science, Analytics & AI/ML",
-    description: "From data wrangling and statistical analysis to deep learning models.",
+    description: "From data wrangling and statistical analysis to machine learning models.",
     milestones: [
-      {
-        id: 'ds1',
-        step: 1,
-        title: "Python for Data Science, NumPy & Pandas",
-        duration: "2 Weeks",
-        prerequisites: ["Basic Programming", "Data Structures"]
-      },
-      {
-        id: 'ds2',
-        step: 2,
-        title: "Applied Mathematics & Statistics",
-        duration: "2 Weeks",
-        prerequisites: ["High School Math", "Linear Algebra Basics"]
-      },
-      {
-        id: 'ds3',
-        step: 3,
-        title: "Machine Learning Algorithms & Scikit-Learn",
-        duration: "3 Weeks",
-        prerequisites: ["Python", "Pandas", "Basic Statistics"]
-      }
+      { id: 'ds1', step: 1, title: "Python for Data Science, NumPy & Pandas", duration: "2 Weeks", prerequisites: ["Basic Programming"] },
+      { id: 'ds2', step: 2, title: "Applied Mathematics & Statistics", duration: "2 Weeks", prerequisites: ["Linear Algebra Basics"] },
+      { id: 'ds3', step: 3, title: "Machine Learning Algorithms & Scikit-Learn", duration: "3 Weeks", prerequisites: ["Python", "Pandas"] }
     ]
   },
   'software-engineering': {
     domain: "Software Engineering & Data Structures (DSA)",
     description: "Core algorithms, complexity analysis, and scalable system design.",
     milestones: [
-      {
-        id: 'se1',
-        step: 1,
-        title: "Time & Space Complexity + Arrays & Strings",
-        duration: "2 Weeks",
-        prerequisites: ["Basic C++/Java/Python", "Loops & Logic"]
-      },
-      {
-        id: 'se2',
-        step: 2,
-        title: "Recursion, Backtracking & Dynamic Programming",
-        duration: "3 Weeks",
-        prerequisites: ["Arrays", "Call Stack", "Mathematical Induction"]
-      },
-      {
-        id: 'se3',
-        step: 3,
-        title: "Trees, BST & Graph Algorithms",
-        duration: "3 Weeks",
-        prerequisites: ["Recursion", "Queue/Stack", "Pointers"]
-      }
+      { id: 'se1', step: 1, title: "Time & Space Complexity + Arrays & Strings", duration: "2 Weeks", prerequisites: ["Basic C++/Java/Python"] },
+      { id: 'se2', step: 2, title: "Recursion, Backtracking & Dynamic Programming", duration: "3 Weeks", prerequisites: ["Arrays", "Call Stack"] },
+      { id: 'se3', step: 3, title: "Trees, BST & Graph Algorithms", duration: "3 Weeks", prerequisites: ["Recursion", "Queues/Stacks"] }
     ]
   }
 };
 
-// =========================================================
-// 100% WORKING VERIFIED HIGH-VIEW YOUTUBE VIDEOS
-// =========================================================
 const verifiedVideoLibrary = {
-  'm1': { videoId: 'pQN-pnXPaVg', title: 'HTML & CSS Full Course - Build Modern Responsive Websites (7.7M+ Views)', creator: 'freeCodeCamp.org', duration: '2 Hours' },
-  'm2': { videoId: 'W6NZfCO5SIk', title: 'JavaScript Tutorial for Beginners: Full Fundamentals & ES6 (15M+ Views)', creator: 'Programming with Mosh', duration: '1 Hour' },
-  'm3': { videoId: 'bMknfKXIFA8', title: 'React.js Complete Beginner Course with Real Projects (4.2M+ Views)', creator: 'freeCodeCamp.org', duration: '12 Hours' },
-  'm4': { videoId: 'Oe421EPjeBE', title: 'Node.js and Express.js Full Backend Architecture Course (4.4M+ Views)', creator: 'freeCodeCamp.org', duration: '8 Hours' },
-  'm5': { videoId: 'ofme2o29ngU', title: 'MongoDB Crash Course & Database Schema Modeling (1.5M+ Views)', creator: 'Web Dev Simplified', duration: '35 Mins' },
-  'ds1': { videoId: 'rfscVS0vtbw', title: 'Python for Beginners & Data Science Fundamentals (40M+ Views)', creator: 'freeCodeCamp.org', duration: '4 Hours 20m' },
-  'ds2': { videoId: 'fNk_zzaMoSs', title: 'Essence of Linear Algebra & Neural Networks Mathematics (8M+ Views)', creator: '3Blue1Brown', duration: '15 Mins' },
-  'ds3': { videoId: 'i_LwzRVP7bg', title: 'Machine Learning for Everybody - Complete Foundations Course (10M+ Views)', creator: 'freeCodeCamp.org', duration: '3 Hours 50m' },
-  'se1': { videoId: '0IAPZzGSbME', title: 'Analysis of Algorithms, Time & Space Complexity (7.8M+ Views)', creator: 'Abdul Bari', duration: '19 Mins' },
-  'se2': { videoId: '8hly31xKli0', title: 'Algorithms and Data Structures Complete Master Course (6M+ Views)', creator: 'freeCodeCamp.org', duration: '5 Hours 20m' },
-  'se3': { videoId: 'DgXR2OWQnLc', title: 'Graph Theory, Trees, BFS & DFS Algorithmic Traversal (1M+ Views)', creator: 'WilliamFiset', duration: '1 Hour 45m' }
+  'm1': { videoId: 'pQN-pnXPaVg', title: 'HTML & CSS Full Course (7.7M+ Views)', creator: 'freeCodeCamp.org', duration: '2 Hours' },
+  'm2': { videoId: 'W6NZfCO5SIk', title: 'JavaScript Tutorial for Beginners (15M+ Views)', creator: 'Programming with Mosh', duration: '1 Hour' },
+  'm3': { videoId: 'bMknfKXIFA8', title: 'React.js Complete Beginner Course (4.2M+ Views)', creator: 'freeCodeCamp.org', duration: '12 Hours' },
+  'm4': { videoId: 'Oe421EPjeBE', title: 'Node.js and Express.js Architecture (4.4M+ Views)', creator: 'freeCodeCamp.org', duration: '8 Hours' },
+  'm5': { videoId: 'ofme2o29ngU', title: 'MongoDB Crash Course & Modeling (1.5M+ Views)', creator: 'Web Dev Simplified', duration: '35 Mins' },
+  'ds1': { videoId: 'rfscVS0vtbw', title: 'Python for Beginners & Data Science (40M+ Views)', creator: 'freeCodeCamp.org', duration: '4 Hours 20m' },
+  'ds2': { videoId: 'fNk_zzaMoSs', title: 'Linear Algebra & Neural Networks (8M+ Views)', creator: '3Blue1Brown', duration: '15 Mins' },
+  'ds3': { videoId: 'i_LwzRVP7bg', title: 'Machine Learning for Everybody (10M+ Views)', creator: 'freeCodeCamp.org', duration: '3 Hours 50m' },
+  'se1': { videoId: '0IAPZzGSbME', title: 'Analysis of Algorithms & Complexity (7.8M+ Views)', creator: 'Abdul Bari', duration: '19 Mins' },
+  'se2': { videoId: '8hly31xKli0', title: 'Algorithms and Data Structures Master Course (6M+ Views)', creator: 'freeCodeCamp.org', duration: '5 Hours 20m' },
+  'se3': { videoId: 'DgXR2OWQnLc', title: 'Graph Theory & Algorithmic Traversal (1M+ Views)', creator: 'WilliamFiset', duration: '1 Hour 45m' }
 };
 
-// Milestone Quizzes Bank
 const milestoneQuizzes = {
-  'm1': [
-    { q: "HTML me semantic container element kaunsa hai?", opts: ["<div>", "<section>", "<span>", "<font>"], ans: 1, exp: "'<section>' ek semantic HTML5 tag hai jo meaning define karta hai." },
-    { q: "CSS Flexbox me main axis ke along items align karne ke liye kya use hota hai?", opts: ["align-items", "justify-content", "align-content", "flex-wrap"], ans: 1, exp: "'justify-content' main axis alignment control karta hai." }
-  ],
-  'm2': [
-    { q: "JavaScript ES6 me immutable variable declare karne ke liye kya use karte hain?", opts: ["var", "let", "const", "def"], ans: 2, exp: "'const' se variable re-assign nahi ho sakta." },
-    { q: "Async operations handle karne ke liye modern JS me kya use hota hai?", opts: ["async/await", "goto", "sleep()", "thread.start()"], ans: 0, exp: "'async/await' asynchronous code ko readable banata hai." }
-  ],
-  'm3': [
-    { q: "React component me state manage karne ke liye kaunsa basic hook use hota hai?", opts: ["useEffect", "useMemo", "useState", "useRef"], ans: 2, exp: "'useState' hook local component state store karta hai." },
-    { q: "Side-effects jaise API calls ke liye kaunsa hook use hota hai?", opts: ["useEffect", "useReducer", "useCallback", "useState"], ans: 0, exp: "'useEffect' component side-effects run karta hai." }
-  ],
-  'm4': [
-    { q: "Node.js me REST APIs create karne ke liye lightweight web framework kaunsa hai?", opts: ["Express.js", "Django", "Spring Boot", "Laravel"], ans: 0, exp: "Express.js Node.js ka standard routing framework hai." },
-    { q: "Incoming request body data ko parse karne ke liye kaunsa middleware use hota hai?", opts: ["express.static()", "express.json()", "cors()", "morgan()"], ans: 1, exp: "'express.json()' incoming JSON payload parse karta hai." }
-  ],
-  'm5': [
-    { q: "MongoDB kis type ka database system hai?", opts: ["Relational SQL", "NoSQL Document-oriented", "Graph Only", "Flat file"], ans: 1, exp: "MongoDB BSON/JSON-like documents store karta hai." },
-    { q: "Mongoose me schema structure define karne ke liye kya use hota hai?", opts: ["new mongoose.Schema()", "mongoose.table()", "mongoose.sql()", "mongoose.create()"], ans: 0, exp: "'mongoose.Schema' database collection structure define karta hai." }
-  ]
+  'm1': [{ q: "HTML me semantic container element kaunsa hai?", opts: ["<div>", "<section>", "<span>", "<font>"], ans: 1, exp: "'<section>' ek semantic HTML5 tag hai." }],
+  'm2': [{ q: "JS ES6 me immutable variable declare karne ke liye kya use hota hai?", opts: ["var", "let", "const", "def"], ans: 2, exp: "'const' variable re-assign nahi ho sakta." }],
+  'm3': [{ q: "React component me local state ke liye basic hook kaunsa hai?", opts: ["useEffect", "useMemo", "useState", "useRef"], ans: 2, exp: "'useState' state handle karta hai." }],
+  'm4': [{ q: "Node.js me REST APIs create karne ka standard routing framework kaunsa hai?", opts: ["Express.js", "Django", "Spring Boot", "Laravel"], ans: 0, exp: "Express.js Node.js ka framework hai." }],
+  'm5': [{ q: "MongoDB kis type ka database system hai?", opts: ["Relational SQL", "NoSQL Document-oriented", "Graph Only", "Flat file"], ans: 1, exp: "MongoDB BSON/JSON documents store karta hai." }]
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  initAdminCredentials();
   checkAuthSession();
 
-  try { initBackground3D(); } catch (e) { console.warn("3D BG Error:", e); }
-  try { initForeground3D(); } catch (e) { console.warn("3D FG Error:", e); }
+  try { initBackground3D(); } catch (e) { console.warn("BG 3D load issue:", e); }
+  try { initForeground3D(); } catch (e) { console.warn("FG 3D load issue:", e); }
 
-  const savedState = localStorage.getItem('edutech_completed_milestones');
-  if (savedState) {
-    try {
-      completedMilestoneIds = new Set(JSON.parse(savedState));
-    } catch (e) {
-      completedMilestoneIds = new Set();
-    }
+  const saved = localStorage.getItem('edutech_completed_milestones');
+  if (saved) {
+    try { completedMilestoneIds = new Set(JSON.parse(saved)); } catch (e) { completedMilestoneIds = new Set(); }
   }
 
-  const roadmapForm = document.getElementById('roadmapForm');
-  if (roadmapForm) {
-    roadmapForm.addEventListener('submit', (e) => {
+  const form = document.getElementById('roadmapForm');
+  if (form) {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const domain = document.getElementById('domainSelect').value;
       const level = document.getElementById('levelSelect').value;
@@ -197,13 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   loadTrackWith3DTransition('web-dev', 'beginner');
-  setupTwoClickGate();
   updatePomodoroDisplay();
 });
 
-/* =========================================================
-   FEATURE 1: THEATER POPUP PLAYER
-   ========================================================= */
 function playVideoModal(videoId, title, creator) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoPlayerIframe');
@@ -211,10 +102,8 @@ function playVideoModal(videoId, title, creator) {
   const creatorEl = document.getElementById('videoModalCreator');
 
   if (titleEl) titleEl.textContent = title;
-  if (creatorEl) creatorEl.innerHTML = `<i class="fa-solid fa-chalkboard-user"></i> ${creator}`;
-
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-  if (iframe) iframe.src = embedUrl;
+  if (creatorEl) creatorEl.textContent = creator;
+  if (iframe) iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
   if (modal) modal.style.display = 'flex';
 }
 
@@ -225,9 +114,56 @@ function closeVideoModal() {
   if (modal) modal.style.display = 'none';
 }
 
-/* =========================================================
-   FEATURE 2: AUTO CERTIFICATE GENERATOR WITH CONFETTI
-   ========================================================= */
+function togglePomodoro() {
+  const btn = document.getElementById('pomoStartBtn');
+  if (pomodoroRunning) {
+    clearInterval(pomodoroTimer);
+    pomodoroRunning = false;
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
+  } else {
+    pomodoroRunning = true;
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    pomodoroTimer = setInterval(() => {
+      if (pomodoroSeconds > 0) {
+        pomodoroSeconds--;
+        updatePomodoroDisplay();
+      } else {
+        clearInterval(pomodoroTimer);
+        pomodoroRunning = false;
+        alert(pomodoroIsBreak ? "Break over! Time to focus." : "Focus session done! Take a break.");
+        switchPomodoroMode();
+      }
+    }, 1000);
+  }
+}
+
+function resetPomodoro() {
+  clearInterval(pomodoroTimer);
+  pomodoroRunning = false;
+  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
+  const btn = document.getElementById('pomoStartBtn');
+  if (btn) btn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
+  updatePomodoroDisplay();
+}
+
+function switchPomodoroMode() {
+  pomodoroIsBreak = !pomodoroIsBreak;
+  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
+  const label = document.getElementById('pomoModeLabel');
+  if (label) {
+    label.textContent = pomodoroIsBreak ? "Coffee Break (5m)" : "Deep Focus Session (25m)";
+    label.style.color = pomodoroIsBreak ? "#34d399" : "#a78bfa";
+  }
+  resetPomodoro();
+}
+
+function updatePomodoroDisplay() {
+  const display = document.getElementById('pomoTimerDisplay');
+  const m = Math.floor(pomodoroSeconds / 60).toString().padStart(2, '0');
+  const s = (pomodoroSeconds % 60).toString().padStart(2, '0');
+  if (display) display.textContent = `${m}:${s}`;
+}
+
 function checkCertificateEligibility(completedCount, totalCount) {
   const banner = document.getElementById('certClaimBanner');
   if (totalCount > 0 && completedCount === totalCount) {
@@ -245,16 +181,10 @@ function openCertificateModal() {
   const dateEl = document.getElementById('certIssueDate');
   const idEl = document.getElementById('certUniqueID');
 
-  const studentName = currentUser ? (currentUser.name || currentUser.username || "Alex Sharma") : "Alex Sharma";
-  if (nameEl) nameEl.textContent = studentName;
+  if (nameEl) nameEl.textContent = currentUser ? currentUser.name : "Alex Sharma";
   if (trackEl) trackEl.textContent = currentDomainTitleText;
-  
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  if (dateEl) dateEl.textContent = dateStr;
-
-  const randomHash = Math.random().toString(36).substring(2, 7).toUpperCase();
-  if (idEl) idEl.textContent = `EDU-2026-${randomHash}`;
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-GB');
+  if (idEl) idEl.textContent = `EDU-2026-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
 
   triggerConfetti();
   if (modal) modal.style.display = 'flex';
@@ -277,16 +207,11 @@ function triggerConfetti() {
   canvas.height = window.innerHeight;
 
   const pieces = [];
-  const numberOfPieces = 150;
-  const colors = ['#f59e0b', '#3b82f6', '#10b981', '#ec4899', '#8b5cf6'];
-
-  for (let i = 0; i < numberOfPieces; i++) {
+  for (let i = 0; i < 120; i++) {
     pieces.push({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height - canvas.height,
-      rotation: Math.random() * 360,
-      size: Math.random() * 8 + 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
+      color: ['#f59e0b', '#3b82f6', '#10b981', '#ec4899'][Math.floor(Math.random() * 4)],
       speed: Math.random() * 3 + 2
     });
   }
@@ -296,551 +221,184 @@ function triggerConfetti() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     pieces.forEach(p => {
       p.y += p.speed;
-      p.rotation += 2;
-      ctx.save();
       ctx.fillStyle = p.color;
-      ctx.translate(p.x, p.y);
-      ctx.rotate((p.rotation * Math.PI) / 180);
-      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 1.5);
-      ctx.restore();
+      ctx.fillRect(p.x, p.y, 6, 10);
     });
-
     frame++;
-    if (frame < 180) {
-      requestAnimationFrame(update);
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    if (frame < 140) requestAnimationFrame(update);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
   update();
 }
 
-/* =========================================================
-   FEATURE 3: POMODORO STUDY TIMER (25m / 5m)
-   ========================================================= */
-function togglePomodoro() {
-  const startBtn = document.getElementById('pomoStartBtn');
-  if (pomodoroRunning) {
-    clearInterval(pomodoroTimer);
-    pomodoroRunning = false;
-    if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume';
-  } else {
-    pomodoroRunning = true;
-    if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
-    pomodoroTimer = setInterval(() => {
-      if (pomodoroSeconds > 0) {
-        pomodoroSeconds--;
-        updatePomodoroDisplay();
-      } else {
-        clearInterval(pomodoroTimer);
-        pomodoroRunning = false;
-        alert(pomodoroIsBreak ? "Break over! Time to focus." : "Focus session completed! Take a 5-minute break.");
-        switchPomodoroMode();
-      }
-    }, 1000);
-  }
-}
-
-function resetPomodoro() {
-  clearInterval(pomodoroTimer);
-  pomodoroRunning = false;
-  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
-  const startBtn = document.getElementById('pomoStartBtn');
-  if (startBtn) startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start';
-  updatePomodoroDisplay();
-}
-
-function switchPomodoroMode() {
-  pomodoroIsBreak = !pomodoroIsBreak;
-  pomodoroSeconds = pomodoroIsBreak ? 5 * 60 : 25 * 60;
-  const modeLabel = document.getElementById('pomoModeLabel');
-  if (modeLabel) {
-    modeLabel.textContent = pomodoroIsBreak ? "Coffee & Rest Break (5m)" : "Deep Focus Session (25m)";
-    modeLabel.style.color = pomodoroIsBreak ? "#34d399" : "#a78bfa";
-  }
-  resetPomodoro();
-}
-
-function updatePomodoroDisplay() {
-  const display = document.getElementById('pomoTimerDisplay');
-  const mins = Math.floor(pomodoroSeconds / 60);
-  const secs = pomodoroSeconds % 60;
-  if (display) {
-    display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  }
-}
-
-/* =========================================================
-   FEATURE 4: MILESTONE MINI QUIZZES
-   ========================================================= */
 function toggleMilestoneQuiz(mId) {
   const box = document.getElementById(`quiz-box-${mId}`);
-  if (!box) return;
-  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
-function handleQuizAnswer(btn, isCorrect) {
+function handleQuizAnswer(btn, isCorrect, exp) {
   const parent = btn.parentElement;
-  const allBtns = parent.querySelectorAll('.quiz-opt-btn');
-  allBtns.forEach(b => {
-    b.disabled = true;
-    b.style.pointerEvents = 'none';
-  });
+  parent.querySelectorAll('.quiz-opt-btn').forEach(b => b.disabled = true);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
 
-  if (isCorrect) {
-    btn.classList.add('correct');
-  } else {
-    btn.classList.add('wrong');
-  }
-
-  const expText = btn.getAttribute('data-exp') || 'Checked!';
   const expBox = document.createElement('div');
   expBox.style.fontSize = '0.74rem';
   expBox.style.marginTop = '0.4rem';
   expBox.style.color = isCorrect ? '#86efac' : '#fca5a5';
-  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${expText}`;
+  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${exp}`;
   parent.parentElement.appendChild(expBox);
 }
 
-/* =========================================================
-   FEATURE 5: PERSONAL NOTES SCRATCHPAD
-   ========================================================= */
 function toggleMilestoneNotes(mId) {
   const box = document.getElementById(`notes-box-${mId}`);
-  if (!box) return;
-  box.style.display = box.style.display === 'block' ? 'none' : 'block';
+  if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
 function autoSaveMilestoneNote(mId) {
-  const textarea = document.getElementById(`note-text-${mId}`);
-  const statusEl = document.getElementById(`note-status-${mId}`);
-  if (!textarea) return;
-
-  const content = textarea.value;
-  localStorage.setItem(`edutech_notes_${mId}`, content);
-
-  if (statusEl) {
-    statusEl.innerHTML = '<i class="fa-solid fa-check"></i> Saved to browser storage.';
-    setTimeout(() => {
-      statusEl.innerHTML = '<i class="fa-solid fa-cloud"></i> Notes automatically synchronized.';
-    }, 2000);
-  }
+  const val = document.getElementById(`note-text-${mId}`).value;
+  localStorage.setItem(`edutech_notes_${mId}`, val);
 }
 
-/* =========================================================
-   SAFE AUTHENTICATION & VISITOR GATE
-   ========================================================= */
-function initAdminCredentials() {
-  const customKey = localStorage.getItem('edutech_custom_master_key');
-  const customPin = localStorage.getItem('edutech_custom_master_pin');
-  if (customKey) DEFAULT_MASTER_KEY = customKey;
-  if (customPin) DEFAULT_MASTER_PIN = customPin;
-}
-
-function setupTwoClickGate() {
-  document.addEventListener('click', (e) => {
-    if (isAdmin || currentUser || !isGateEnabled) return;
-    if (e.target.closest('#authModal') || e.target.closest('#adminModal') || e.target.closest('#videoModal') || e.target.closest('#certificateModal') || e.target.closest('.sub-account-bar') || e.target.closest('.navbar')) return;
-
-    userInteractionCount++;
-    if (userInteractionCount >= 3) {
-      openAuthModal('signup', false);
+async function fetchRoadmap(domain, level) {
+  try {
+    const res = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && data.milestones) {
+        currentMilestones = data.milestones;
+        renderRoadmap(data.domain || currentDomainTitleText, data.description || "", data.milestones);
+        updateProgress();
+        return;
+      }
     }
+  } catch (e) {
+    console.warn("API offline, using built-in fallback.");
+  }
+
+  const fallback = DEFAULT_ROADMAPS[domain] || DEFAULT_ROADMAPS['web-dev'];
+  currentMilestones = fallback.milestones;
+  renderRoadmap(fallback.domain, fallback.description, fallback.milestones);
+  updateProgress();
+}
+
+function renderRoadmap(title, description, milestones) {
+  const titleEl = document.getElementById('currentDomainTitle');
+  const descEl = document.getElementById('currentDomainDesc');
+  const container = document.getElementById('milestonesContainer');
+
+  if (titleEl) titleEl.textContent = title;
+  if (descEl) descEl.textContent = description;
+  if (!container) return;
+  container.innerHTML = '';
+
+  milestones.forEach((m) => {
+    const isDone = completedMilestoneIds.has(m.id);
+    const card = document.createElement('div');
+    card.className = `milestone-card ${isDone ? 'completed' : ''}`;
+    card.id = `card-${m.id}`;
+
+    const prereqs = m.prerequisites || ["Basics"];
+    const prereqHTML = prereqs.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
+
+    const v = verifiedVideoLibrary[m.id] || { videoId: 'pQN-pnXPaVg', title: `${m.title} Tutorial`, creator: 'Top Mentors', duration: '2 Hours' };
+    const qList = milestoneQuizzes[m.id] || [{ q: `${m.title} core concept?`, opts: ["Syntax", "Hands-on", "Both", "Skip"], ans: 2, exp: "Both syntax and practice are vital." }];
+
+    const quizHTML = qList.map(q => `
+      <div style="margin-bottom: 0.6rem;">
+        <p style="font-size: 0.84rem; font-weight: 700; color: #fff;">${q.q}</p>
+        <div class="quiz-options">
+          ${q.opts.map((opt, idx) => `
+            <button class="quiz-opt-btn" onclick="handleQuizAnswer(this, ${idx === q.ans}, '${q.exp}')">${opt}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    const savedNote = localStorage.getItem(`edutech_notes_${m.id}`) || '';
+
+    card.innerHTML = `
+      <div class="milestone-top">
+        <div style="display: flex; align-items: center; gap: 0.8rem;">
+          <input type="checkbox" class="custom-checkbox" id="check-${m.id}" ${isDone ? 'checked' : ''} onchange="toggleMilestoneCompletion('${m.id}')">
+          <span style="font-size: 0.8rem; background: rgba(59,130,246,0.15); padding: 0.2rem 0.6rem; border-radius: 6px; color: #60a5fa; font-weight: 700;">Milestone ${m.step || 1}</span>
+          <h3 style="display: inline; font-size: 1.2rem;">${m.title}</h3>
+        </div>
+        <span style="font-size: 0.8rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> ${m.duration || 'Flexible'}</span>
+      </div>
+
+      <div class="prereq-list">${prereqHTML}</div>
+
+      <div class="video-grid">
+        <div class="video-item">
+          <h5>${v.title}</h5>
+          <span style="font-size: 0.8rem; color: #60a5fa;">${v.creator} • ${v.duration}</span>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem;">
+            <button class="watch-modal-btn" onclick="playVideoModal('${v.videoId}', '${v.title}', '${v.creator}')">
+              <i class="fa-solid fa-play"></i> Watch in Theater
+            </button>
+            <a href="https://www.youtube.com/watch?v=${v.videoId}" target="_blank" style="padding: 0.55rem 0.85rem; font-size: 0.78rem; text-decoration: none; border-radius: 8px; background: rgba(255,255,255,0.08); color: white; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <i class="fa-brands fa-youtube" style="color: #ef4444;"></i> Open YouTube
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="milestone-extras-row">
+        <button class="extra-action-btn" onclick="toggleMilestoneQuiz('${m.id}')"><i class="fa-solid fa-list-check"></i> Quick Quiz</button>
+        <button class="extra-action-btn" onclick="toggleMilestoneNotes('${m.id}')"><i class="fa-solid fa-pen-nib"></i> Study Notes</button>
+      </div>
+
+      <div class="milestone-quiz-box" id="quiz-box-${m.id}">
+        <strong style="color: #93c5fd; font-size: 0.84rem; display:block; margin-bottom: 0.5rem;">Knowledge Check:</strong>
+        ${quizHTML}
+      </div>
+
+      <div class="milestone-notes-box" id="notes-box-${m.id}">
+        <strong style="color: #fcd34d; font-size: 0.82rem; display:block; margin-bottom: 0.4rem;">Personal Scratchpad:</strong>
+        <textarea class="milestone-notes-textarea" id="note-text-${m.id}" placeholder="Write notes here..." oninput="autoSaveMilestoneNote('${m.id}')">${savedNote}</textarea>
+      </div>
+    `;
+
+    container.appendChild(card);
   });
 }
 
-function handleBackdropClick() {
-  if (isAuthForced && !isAdmin) {
-    showAuthAlert("Account registration is required to continue exploring Edutech.", 'error');
-    return;
-  }
-  closeAuthModal();
-}
-
-function checkAuthSession() {
-  const storedUser = localStorage.getItem('edutech_user');
-  const storedToken = localStorage.getItem('edutech_admin_token');
-  const authNavBtn = document.getElementById('authNavBtn');
-  const userProfileNav = document.getElementById('userProfileNav');
-  const navUserName = document.getElementById('navUserName');
-  const navUserAvatar = document.getElementById('navUserAvatar');
-  const accountStatusText = document.getElementById('accountStatusText');
-
-  if (storedToken && storedToken.startsWith("EDUTECH_ROOT_AUTH_")) {
-    isAdmin = true;
-  }
-
-  if (storedUser) {
-    try {
-      currentUser = JSON.parse(storedUser);
-      const displayName = (currentUser && (currentUser.name || currentUser.username || "Learner")).toString();
-      if (authNavBtn) authNavBtn.style.display = 'none';
-      if (userProfileNav) userProfileNav.style.display = 'flex';
-      if (navUserName) navUserName.textContent = isAdmin ? "Master Admin" : displayName;
-      if (navUserAvatar) {
-        navUserAvatar.innerHTML = isAdmin 
-          ? '<i class="fa-solid fa-crown" style="font-size:0.75rem;"></i>' 
-          : displayName.charAt(0).toUpperCase();
-      }
-
-      if (accountStatusText) {
-        accountStatusText.innerHTML = isAdmin 
-          ? '<span style="color: #c084fc;"><i class="fa-solid fa-shield-halved"></i> Root Verified:</span>'
-          : '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Active Learner:';
-      }
-      isAuthForced = false;
-    } catch (e) {
-      logoutUser();
-    }
+function toggleMilestoneCompletion(id) {
+  const card = document.getElementById(`card-${id}`);
+  if (completedMilestoneIds.has(id)) {
+    completedMilestoneIds.delete(id);
+    if (card) card.classList.remove('completed');
   } else {
-    currentUser = null;
-    if (authNavBtn) authNavBtn.style.display = 'inline-flex';
-    if (userProfileNav) userProfileNav.style.display = 'none';
-    if (accountStatusText) accountStatusText.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Student Portal:';
-  }
-}
-
-function openAuthModal(tab = 'signup', forced = false) {
-  if (isAdmin) return;
-  isAuthForced = forced;
-  const modal = document.getElementById('authModal');
-  const closeBtn = document.getElementById('authCloseBtn');
-  const gateBanner = document.getElementById('gateNoticeBanner');
-
-  if (modal) modal.style.display = 'flex';
-  if (closeBtn) closeBtn.style.display = forced ? 'none' : 'block';
-  if (gateBanner) gateBanner.style.display = forced ? 'block' : 'none';
-
-  hideAuthAlert();
-  switchAuthTab(tab);
-}
-
-function closeAuthModal() {
-  if (isAuthForced && !isAdmin) return;
-  const modal = document.getElementById('authModal');
-  if (modal) modal.style.display = 'none';
-}
-
-function switchAuthTab(tab) {
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
-  const tabLoginBtn = document.getElementById('tabLoginBtn');
-  const tabSignupBtn = document.getElementById('tabSignupBtn');
-  const title = document.getElementById('authModalTitle');
-  const sub = document.getElementById('authModalSub');
-
-  hideAuthAlert();
-
-  if (tab === 'login') {
-    if (loginForm) loginForm.style.display = 'flex';
-    if (signupForm) signupForm.style.display = 'none';
-    if (tabLoginBtn) tabLoginBtn.classList.add('active');
-    if (tabSignupBtn) tabSignupBtn.classList.remove('active');
-    if (title) title.textContent = 'Welcome Back';
-    if (sub) sub.textContent = 'Access your personalized roadmaps and saved progress';
-  } else {
-    if (loginForm) loginForm.style.display = 'none';
-    if (signupForm) signupForm.style.display = 'flex';
-    if (tabLoginBtn) tabLoginBtn.classList.remove('active');
-    if (tabSignupBtn) tabSignupBtn.classList.add('active');
-    if (title) title.textContent = 'Create Student Account';
-    if (sub) sub.textContent = 'Join Edutech to unlock interactive 3D roadmaps';
-  }
-}
-
-function showAuthAlert(msg, type = 'error') {
-  const alertBox = document.getElementById('authAlert');
-  if (alertBox) {
-    alertBox.textContent = msg;
-    alertBox.className = `auth-alert ${type}`;
-    alertBox.style.display = 'block';
-  }
-}
-
-function hideAuthAlert() {
-  const alertBox = document.getElementById('authAlert');
-  if (alertBox) alertBox.style.display = 'none';
-}
-
-async function handleLogin(e) {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-
-  try {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
-    if (data.success) {
-      onAuthSuccess(data.user, 'Welcome back!');
-    } else {
-      showAuthAlert(data.message || 'Invalid email or password.');
-    }
-  } catch (err) {
-    const fallbackUser = { id: Date.now(), name: email.split('@')[0], email, goal: "Full-Stack Web Dev" };
-    onAuthSuccess(fallbackUser, 'Login successful!');
-  }
-}
-
-async function handleSignup(e) {
-  e.preventDefault();
-  const name = document.getElementById('signupName').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  const goal = document.getElementById('signupGoal').value;
-
-  try {
-    const res = await fetch('/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, goal })
-    });
-    const data = await res.json();
-    if (data.success) {
-      saveUserToRoster(data.user);
-      onAuthSuccess(data.user, 'Account created successfully!');
-    } else {
-      showAuthAlert(data.message || 'Registration failed.');
-    }
-  } catch (err) {
-    const fallbackUser = { id: Date.now(), name, email, goal };
-    saveUserToRoster(fallbackUser);
-    onAuthSuccess(fallbackUser, 'Account registered successfully!');
-  }
-}
-
-function saveUserToRoster(user) {
-  try {
-    let roster = [];
-    const raw = localStorage.getItem('edutech_user_roster');
-    if (raw) roster = JSON.parse(raw);
-    roster.push(user);
-    localStorage.setItem('edutech_user_roster', JSON.stringify(roster));
-  } catch (e) {}
-}
-
-function onAuthSuccess(user, message) {
-  showAuthAlert(message, 'success');
-  localStorage.setItem('edutech_user', JSON.stringify(user));
-  isAuthForced = false;
-  setTimeout(() => {
-    const modal = document.getElementById('authModal');
-    if (modal) modal.style.display = 'none';
-    checkAuthSession();
-  }, 600);
-}
-
-function logoutUser() {
-  localStorage.removeItem('edutech_user');
-  localStorage.removeItem('edutech_admin_token');
-  isAdmin = false;
-  checkAuthSession();
-  userInteractionCount = 0;
-}
-
-/* =========================================================
-   ADMIN PORTAL
-   ========================================================= */
-function openAdminModal() {
-  const modal = document.getElementById('adminModal');
-  const loginSec = document.getElementById('adminLoginSection');
-  const setupSec = document.getElementById('adminSetupSection');
-  const dashSec = document.getElementById('adminDashboardSection');
-  const alertBox = document.getElementById('adminAlert');
-
-  if (alertBox) alertBox.style.display = 'none';
-
-  const now = Date.now();
-  if (now < lockoutUntil) {
-    const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
-    showAdminAlert(`Security Lockout Active. Try again in ${remainingSecs} seconds.`);
-    if (loginSec) loginSec.style.display = 'block';
-    if (setupSec) setupSec.style.display = 'none';
-    if (dashSec) dashSec.style.display = 'none';
-    if (modal) modal.style.display = 'flex';
-    return;
+    completedMilestoneIds.add(id);
+    if (card) card.classList.add('completed');
   }
 
-  if (isAdmin) {
-    if (loginSec) loginSec.style.display = 'none';
-    if (setupSec) setupSec.style.display = 'none';
-    if (dashSec) dashSec.style.display = 'block';
-    renderAdminStats();
-  } else {
-    switchAdminPortalTab('login');
-  }
-
-  if (modal) modal.style.display = 'flex';
+  localStorage.setItem('edutech_completed_milestones', JSON.stringify(Array.from(completedMilestoneIds)));
+  updateProgress();
 }
 
-function closeAdminModal() {
-  const modal = document.getElementById('adminModal');
-  if (modal) modal.style.display = 'none';
+function updateProgress() {
+  if (currentMilestones.length === 0) return;
+  let done = 0;
+  currentMilestones.forEach(m => { if (completedMilestoneIds.has(m.id)) done++; });
+
+  const pct = Math.round((done / currentMilestones.length) * 100);
+  const pctEl = document.getElementById('progressPercentage');
+  const barEl = document.getElementById('progressBarFill');
+  const statusEl = document.getElementById('completionStatus');
+
+  if (pctEl) pctEl.textContent = `${pct}%`;
+  if (barEl) barEl.style.width = `${pct}%`;
+  if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${done} of ${currentMilestones.length} milestones finished.`;
+
+  checkCertificateEligibility(done, currentMilestones.length);
 }
 
-function switchAdminPortalTab(tab) {
-  const loginSec = document.getElementById('adminLoginSection');
-  const setupSec = document.getElementById('adminSetupSection');
-  const dashSec = document.getElementById('adminDashboardSection');
-  const tabLoginBtn = document.getElementById('adminTabLoginBtn');
-  const tabSetupBtn = document.getElementById('adminTabSetupBtn');
-  const alertBox = document.getElementById('adminAlert');
-
-  if (alertBox) alertBox.style.display = 'none';
-  if (dashSec) dashSec.style.display = 'none';
-
-  if (tab === 'login') {
-    if (loginSec) loginSec.style.display = 'block';
-    if (setupSec) setupSec.style.display = 'none';
-    if (tabLoginBtn) tabLoginBtn.classList.add('active');
-    if (tabSetupBtn) tabSetupBtn.classList.remove('active');
-  } else {
-    if (loginSec) loginSec.style.display = 'none';
-    if (setupSec) setupSec.style.display = 'block';
-    if (tabLoginBtn) tabLoginBtn.classList.remove('active');
-    if (tabSetupBtn) tabSetupBtn.classList.add('active');
-  }
-}
-
-function handleSecureAdminLogin(e) {
-  e.preventDefault();
-
-  const now = Date.now();
-  if (now < lockoutUntil) {
-    const remainingSecs = Math.ceil((lockoutUntil - now) / 1000);
-    showAdminAlert(`Security Lockout Active. Try again in ${remainingSecs} seconds.`);
-    return;
-  }
-
-  const keyInput = document.getElementById('adminSecretKeyInput').value.trim();
-  const pinInput = document.getElementById('adminPinInput').value.trim();
-  const warningEl = document.getElementById('attemptWarning');
-
-  if (keyInput === DEFAULT_MASTER_KEY && pinInput === DEFAULT_MASTER_PIN) {
-    failedAttempts = 0;
-    activateAdminMode();
-  } else {
-    failedAttempts++;
-    const remaining = 3 - failedAttempts;
-
-    if (failedAttempts >= 3) {
-      lockoutUntil = Date.now() + (5 * 60 * 1000);
-      failedAttempts = 0;
-      showAdminAlert("Too many failed attempts! Admin Portal locked for 5 minutes.");
-    } else {
-      showAdminAlert(`Authentication failed! Invalid Key or PIN.`);
-      if (warningEl) warningEl.textContent = `Attempts remaining: ${remaining}`;
-    }
-  }
-}
-
-function handleCustomPinCreation(e) {
-  e.preventDefault();
-  const customKey = document.getElementById('setupCustomKeyInput').value.trim();
-  const customPin = document.getElementById('setupCustomPinInput').value.trim();
-
-  if (!customKey || customPin.length !== 6 || isNaN(customPin)) {
-    showAdminAlert("Please enter a valid Master Key and a 6-digit numeric PIN.", 'error');
-    return;
-  }
-
-  DEFAULT_MASTER_KEY = customKey;
-  DEFAULT_MASTER_PIN = customPin;
-  localStorage.setItem('edutech_custom_master_key', customKey);
-  localStorage.setItem('edutech_custom_master_pin', customPin);
-
-  showAdminAlert("Custom PIN & Key saved! Auto-logging in as Admin...", 'success');
-  setTimeout(() => { activateAdminMode(); }, 700);
-}
-
-function activateAdminMode() {
-  isAdmin = true;
-  isAuthForced = false;
-
-  const secureToken = "EDUTECH_ROOT_AUTH_" + btoa(DEFAULT_MASTER_KEY + ":" + Date.now());
-  localStorage.setItem('edutech_admin_token', secureToken);
-
-  currentUser = { id: 1001, name: "Master Admin", email: "admin@edutech.io", role: "admin" };
-  localStorage.setItem('edutech_user', JSON.stringify(currentUser));
-
-  checkAuthSession();
-
-  const loginSec = document.getElementById('adminLoginSection');
-  const setupSec = document.getElementById('adminSetupSection');
-  const dashSec = document.getElementById('adminDashboardSection');
-
-  if (loginSec) loginSec.style.display = 'none';
-  if (setupSec) setupSec.style.display = 'none';
-  if (dashSec) dashSec.style.display = 'block';
-  renderAdminStats();
-
-  const authModal = document.getElementById('authModal');
-  if (authModal) authModal.style.display = 'none';
-}
-
-function exitAdminMode() {
-  isAdmin = false;
-  localStorage.removeItem('edutech_admin_token');
-  logoutUser();
-  closeAdminModal();
-}
-
-function toggleVisitorGate() {
-  isGateEnabled = !isGateEnabled;
-  const btn = document.getElementById('gateToggleBtn');
-  if (btn) {
-    btn.textContent = isGateEnabled ? "Status: ENABLED" : "Status: DISABLED";
-    btn.style.background = isGateEnabled ? "#10b981" : "#ef4444";
-  }
-}
-
-function renderAdminStats() {
-  const usersEl = document.getElementById('adminStatUsers');
-  const milestonesEl = document.getElementById('adminStatMilestones');
-
-  let userRoster = [];
-  try {
-    const raw = localStorage.getItem('edutech_user_roster');
-    if (raw) userRoster = JSON.parse(raw);
-  } catch (e) { userRoster = []; }
-
-  if (usersEl) usersEl.textContent = Math.max(1, userRoster.length + 1);
-  if (milestonesEl) milestonesEl.textContent = completedMilestoneIds.size;
-}
-
-/* =========================================================
-   3D ENGINE & NAVIGATION
-   ========================================================= */
-function navigateToSection3D(targetId, event) {
-  if (event) event.preventDefault();
-
-  document.querySelectorAll('.nav-btn-3d').forEach(btn => btn.classList.remove('active'));
-  const clickedBtn = event ? event.currentTarget : null;
-  if (clickedBtn && clickedBtn.classList.contains('nav-btn-3d')) {
-    clickedBtn.classList.add('active');
-  }
-
-  triggerHyperdriveWarp();
-
-  const targetElement = document.getElementById(targetId);
-  if (!targetElement) return;
-
-  targetElement.classList.remove('section-3d-unfold');
-  void targetElement.offsetWidth;
-  targetElement.classList.add('section-3d-unfold');
-  targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function triggerHyperdriveWarp() {
-  isWarpSpeedActive = true;
-  if (bgCamera) bgCamera.position.z = 24;
-  setTimeout(() => {
-    isWarpSpeedActive = false;
-    if (bgCamera) bgCamera.position.z = 30;
-  }, 700);
+function filterMilestones() {
+  const q = document.getElementById('milestoneSearchInput').value.toLowerCase();
+  document.querySelectorAll('.milestone-card').forEach(card => {
+    card.style.display = card.textContent.toLowerCase().includes(q) ? 'block' : 'none';
+  });
 }
 
 function initBackground3D() {
@@ -851,47 +409,24 @@ function initBackground3D() {
   bgCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   bgCamera.position.z = 30;
 
-  bgRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  bgRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
   bgRenderer.setSize(window.innerWidth, window.innerHeight);
-  bgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const count = 650;
+  const count = 500;
   const pos = new Float32Array(count * 3);
-  for (let i = 0; i < count * 3; i++) {
-    pos[i] = (Math.random() - 0.5) * 90;
-  }
+  for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 80;
+
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const mat = new THREE.PointsMaterial({ size: 0.5, color: 0x6366f1, transparent: true, opacity: 0.65 });
-  bgPoints = new THREE.Points(geo, mat);
+  bgPoints = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.5, color: 0x6366f1, transparent: true, opacity: 0.6 }));
   bgScene.add(bgPoints);
-
-  let mouseX = 0, mouseY = 0;
-  window.addEventListener('mousemove', (e) => {
-    mouseX = (e.clientX / window.innerWidth) - 0.5;
-    mouseY = (e.clientY / window.innerHeight) - 0.5;
-  });
 
   function animate() {
     requestAnimationFrame(animate);
-    if (isWarpSpeedActive) {
-      bgPoints.rotation.y -= 0.025;
-      bgPoints.rotation.x += 0.012;
-    } else {
-      bgPoints.rotation.y -= 0.0006;
-    }
-    bgCamera.position.x += (mouseX * 3 - bgCamera.position.x) * 0.05;
-    bgCamera.position.y += (-mouseY * 3 - bgCamera.position.y) * 0.05;
-    bgCamera.lookAt(bgScene.position);
+    bgPoints.rotation.y -= 0.0006;
     bgRenderer.render(bgScene, bgCamera);
   }
   animate();
-
-  window.addEventListener('resize', () => {
-    bgCamera.aspect = window.innerWidth / window.innerHeight;
-    bgCamera.updateProjectionMatrix();
-    bgRenderer.setSize(window.innerWidth, window.innerHeight);
-  });
 }
 
 function initForeground3D() {
@@ -900,18 +435,15 @@ function initForeground3D() {
 
   fgScene = new THREE.Scene();
   fgCamera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-  fgCamera.position.z = 6.5;
+  fgCamera.position.z = 6;
 
   fgRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   fgRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
-  fgRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  const pLight1 = new THREE.PointLight(0x3b82f6, 2, 50);
-  pLight1.position.set(5, 5, 5);
-  fgScene.add(pLight1);
-
-  const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
-  fgScene.add(ambLight);
+  const light = new THREE.PointLight(0x3b82f6, 2, 50);
+  light.position.set(5, 5, 5);
+  fgScene.add(light);
+  fgScene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
   buildForegroundMesh('web-dev');
 
@@ -935,25 +467,20 @@ function buildForegroundMesh(domain) {
   if (fgMesh) fgScene.remove(fgMesh);
   if (fgWireframeMesh) fgScene.remove(fgWireframeMesh);
 
-  let geo, matColor = 0x3b82f6;
+  let geo = new THREE.TorusKnotGeometry(1.5, 0.4, 80, 16);
+  let color = 0x38bdf8;
 
-  if (domain === 'web-dev') {
-    geo = new THREE.TorusKnotGeometry(1.6, 0.45, 100, 16);
-    matColor = 0x38bdf8;
-  } else if (domain === 'data-science') {
-    geo = new THREE.IcosahedronGeometry(2.1, 2);
-    matColor = 0xa855f7;
+  if (domain === 'data-science') {
+    geo = new THREE.IcosahedronGeometry(2, 1);
+    color = 0xa855f7;
   } else if (domain === 'software-engineering') {
-    geo = new THREE.OctahedronGeometry(2.2, 0);
-    matColor = 0x10b981;
+    geo = new THREE.OctahedronGeometry(2, 0);
+    color = 0x10b981;
   }
 
-  const mat = new THREE.MeshPhongMaterial({ color: matColor, transparent: true, opacity: 0.35, flatShading: true });
-  fgMesh = new THREE.Mesh(geo, mat);
+  fgMesh = new THREE.Mesh(geo, new THREE.MeshPhongMaterial({ color, transparent: true, opacity: 0.35 }));
+  fgWireframeMesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, wireframe: true, transparent: true, opacity: 0.85 }));
   fgScene.add(fgMesh);
-
-  const wireMat = new THREE.MeshBasicMaterial({ color: matColor, wireframe: true, transparent: true, opacity: 0.85 });
-  fgWireframeMesh = new THREE.Mesh(geo, wireMat);
   fgScene.add(fgWireframeMesh);
 }
 
@@ -961,235 +488,123 @@ function loadTrackWith3DTransition(domain, level = 'beginner') {
   currentActiveDomain = domain;
   buildForegroundMesh(domain);
 
-  const holoTitle = document.getElementById('holoTrackTitle');
-  const holoDesc = document.getElementById('holoTrackDesc');
+  const titleEl = document.getElementById('holoTrackTitle');
+  if (domain === 'web-dev') currentDomainTitleText = "Full-Stack Web Development (MERN)";
+  else if (domain === 'data-science') currentDomainTitleText = "Data Science & AI/ML";
+  else if (domain === 'software-engineering') currentDomainTitleText = "Software Engineering & DSA";
 
-  if (domain === 'web-dev') {
-    currentDomainTitleText = "Full-Stack Web Development (MERN)";
-    if (holoTitle) holoTitle.textContent = currentDomainTitleText;
-    if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport demonstrating Client-Server handshake, Component Trees, and REST-MongoDB layers.";
-  } else if (domain === 'data-science') {
-    currentDomainTitleText = "Data Science, Analytics & AI/ML";
-    if (holoTitle) holoTitle.textContent = "Data Science & AI Neural Core";
-    if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport displaying multi-layer Neural Network synapses, Matrix computations, and Gradient Descent models.";
-  } else if (domain === 'software-engineering') {
-    currentDomainTitleText = "Software Engineering & Data Structures (DSA)";
-    if (holoTitle) holoTitle.textContent = "Software Engineering & DSA Architecture";
-    if (holoDesc) holoDesc.textContent = "Interactive 3D Viewport visualizing Graph Topologies, Tree Nodes, Algorithmic Complexity, and System Design.";
-  }
-
+  if (titleEl) titleEl.textContent = currentDomainTitleText;
   fetchRoadmap(domain, level);
 }
 
 function quickSelectTrack(domain) {
-  const select = document.getElementById('domainSelect');
-  if (select) select.value = domain;
+  const sel = document.getElementById('domainSelect');
+  if (sel) sel.value = domain;
   loadTrackWith3DTransition(domain, 'beginner');
-  navigateToSection3D('front-3d-section');
+  navigateToSection3D('tracks');
 }
 
-/* =========================================================
-   ROBUST ROADMAP FETCH WITH ZERO-FAIL FALLBACK
-   ========================================================= */
-async function fetchRoadmap(domain, level) {
-  try {
-    const response = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data && data.success && data.milestones && data.milestones.length > 0) {
-        currentMilestones = data.milestones;
-        renderRoadmap(data.domain || currentDomainTitleText, data.description || "", data.milestones);
-        updateProgress();
-        return;
-      }
-    }
-  } catch (error) {
-    console.warn("API offline or error, loading built-in roadmap.");
-  }
-
-  // Guaranteed Fallback if backend API is offline
-  const fallback = DEFAULT_ROADMAPS[domain] || DEFAULT_ROADMAPS['web-dev'];
-  currentMilestones = fallback.milestones;
-  renderRoadmap(fallback.domain, fallback.description, fallback.milestones);
-  updateProgress();
+function navigateToSection3D(targetId, e) {
+  if (e) e.preventDefault();
+  const el = document.getElementById(targetId);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
 
-function renderRoadmap(title, description, milestones) {
-  const currentDomainTitle = document.getElementById('currentDomainTitle');
-  const currentDomainDesc = document.getElementById('currentDomainDesc');
-  const milestonesContainer = document.getElementById('milestonesContainer');
-
-  if (currentDomainTitle) currentDomainTitle.textContent = title;
-  if (currentDomainDesc) currentDomainDesc.textContent = description;
-  if (!milestonesContainer) return;
-  milestonesContainer.innerHTML = '';
-
-  milestones.forEach((milestone) => {
-    const isCompleted = completedMilestoneIds.has(milestone.id);
-
-    const card = document.createElement('div');
-    card.className = `milestone-card ${isCompleted ? 'completed' : ''}`;
-    card.id = `card-${milestone.id}`;
-
-    const prereqs = milestone.prerequisites || ["Core Programming Logic", "Syntax Foundations"];
-    const prereqHTML = prereqs.map(p => `<span class="prereq-pill"><i class="fa-solid fa-check"></i> ${p}</span>`).join(' ');
-
-    const targetVideo = verifiedVideoLibrary[milestone.id] || {
-      videoId: 'pQN-pnXPaVg',
-      title: `${milestone.title} Complete Tutorial`,
-      creator: 'Top Industry Mentors',
-      duration: milestone.duration || '2 Hours'
-    };
-
-    const directWatchUrl = `https://www.youtube.com/watch?v=${targetVideo.videoId}`;
-
-    const videosHTML = `
-      <div class="video-item">
-        <div class="video-info">
-          <h5>${targetVideo.title}</h5>
-          <span class="video-creator"><i class="fa-solid fa-chalkboard-user"></i> ${targetVideo.creator}</span>
-          <span class="video-duration"> • ${targetVideo.duration}</span>
-        </div>
-        <div style="display: flex; gap: 0.5rem; margin-top: 0.8rem; flex-wrap: wrap;">
-          <button class="watch-modal-btn" onclick="playVideoModal('${targetVideo.videoId}', '${targetVideo.title}', '${targetVideo.creator}')" style="margin-top:0; flex:1;">
-            <i class="fa-solid fa-circle-play"></i> Watch in Theater
-          </button>
-          <a href="${directWatchUrl}" target="_blank" rel="noopener noreferrer" style="margin-top:0; padding: 0.55rem 0.85rem; font-size: 0.78rem; text-decoration: none; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.15); color: white; font-weight: 600;">
-            <i class="fa-brands fa-youtube" style="color: #ef4444;"></i> Open YouTube
-          </a>
-        </div>
-      </div>
-    `;
-
-    const questions = milestoneQuizzes[milestone.id] || [
-      {
-        q: `${milestone.title} ka main foundational concept kya hai?`,
-        opts: ["Theory & Syntax", "Hands-on Code", "Both Syntax & Practice", "Skip to Framework"],
-        ans: 2,
-        exp: "Dono syntax aur live practical implementations critical hain."
-      }
-    ];
-
-    const quizHTML = questions.map((qObj, qIdx) => `
-      <div class="quiz-question-item">
-        <p class="quiz-q-title">Q${qIdx + 1}: ${qObj.q}</p>
-        <div class="quiz-options">
-          ${qObj.opts.map((opt, oIdx) => `
-            <button class="quiz-opt-btn" data-exp="${qObj.exp}" onclick="handleQuizAnswer(this, ${oIdx === qObj.ans})">
-              ${opt}
-            </button>
-          `).join('')}
-        </div>
-      </div>
-    `).join('');
-
-    const savedNote = localStorage.getItem(`edutech_notes_${milestone.id}`) || '';
-
-    card.innerHTML = `
-      <div class="milestone-top">
-        <div class="milestone-title-area">
-          <input type="checkbox" class="custom-checkbox" id="check-${milestone.id}" 
-            ${isCompleted ? 'checked' : ''} 
-            onchange="toggleMilestoneCompletion('${milestone.id}')">
-          <div>
-            <span class="milestone-step-number">Milestone ${milestone.step || 1}</span>
-            <h3 style="display:inline; margin-left: 0.6rem;">${milestone.title}</h3>
-          </div>
-        </div>
-        <span class="milestone-duration"><i class="fa-regular fa-clock"></i> ${milestone.duration || 'Flexible'}</span>
-      </div>
-
-      <div>
-        <strong style="font-size: 0.8rem; color: #94a3b8;">Essential Prerequisites:</strong>
-        <div class="prereq-list">${prereqHTML}</div>
-      </div>
-
-      <div style="margin-top: 1rem;">
-        <strong style="font-size: 0.82rem; color: #f8fafc;"><i class="fa-solid fa-play"></i> Curated Lecture:</strong>
-        <div class="video-grid">${videosHTML}</div>
-      </div>
-
-      <div class="milestone-extras-row">
-        <button class="extra-action-btn" onclick="toggleMilestoneQuiz('${milestone.id}')">
-          <i class="fa-solid fa-list-check" style="color: #60a5fa;"></i> Quick Quiz
-        </button>
-        <button class="extra-action-btn" onclick="toggleMilestoneNotes('${milestone.id}')">
-          <i class="fa-solid fa-pen-nib" style="color: #f59e0b;"></i> Study Notes
-        </button>
-      </div>
-
-      <div class="milestone-quiz-box" id="quiz-box-${milestone.id}">
-        <strong style="font-size: 0.84rem; color: #93c5fd; display: block; margin-bottom: 0.6rem;">
-          <i class="fa-solid fa-brain"></i> Knowledge Check (2 MCQs):
-        </strong>
-        ${quizHTML}
-      </div>
-
-      <div class="milestone-notes-box" id="notes-box-${milestone.id}">
-        <strong style="font-size: 0.82rem; color: #fcd34d; display: block; margin-bottom: 0.4rem;">
-          <i class="fa-solid fa-book-open"></i> Personal Scratchpad:
-        </strong>
-        <textarea class="milestone-notes-textarea" id="note-text-${milestone.id}" 
-          placeholder="Write summary notes, code snippets, or interview points..." 
-          oninput="autoSaveMilestoneNote('${milestone.id}')">${savedNote}</textarea>
-        <span class="notes-save-status" id="note-status-${milestone.id}">
-          <i class="fa-solid fa-cloud"></i> Notes automatically synchronized.
-        </span>
-      </div>
-    `;
-
-    milestonesContainer.appendChild(card);
-  });
+function openAuthModal(tab = 'signup') {
+  const modal = document.getElementById('authModal');
+  if (modal) modal.style.display = 'flex';
+  switchAuthTab(tab);
 }
 
-function filterMilestones() {
-  const query = document.getElementById('milestoneSearchInput').value.toLowerCase();
-  const cards = document.querySelectorAll('.milestone-card');
-  cards.forEach(card => {
-    const text = card.textContent.toLowerCase();
-    card.style.display = text.includes(query) ? 'block' : 'none';
-  });
+function closeAuthModal() {
+  const modal = document.getElementById('authModal');
+  if (modal) modal.style.display = 'none';
 }
 
-function toggleMilestoneCompletion(id) {
-  const card = document.getElementById(`card-${id}`);
-  if (completedMilestoneIds.has(id)) {
-    completedMilestoneIds.delete(id);
-    if (card) card.classList.remove('completed');
+function switchAuthTab(tab) {
+  const lForm = document.getElementById('loginForm');
+  const sForm = document.getElementById('signupForm');
+  const tLogin = document.getElementById('tabLoginBtn');
+  const tSignup = document.getElementById('tabSignupBtn');
+
+  if (tab === 'login') {
+    if (lForm) lForm.style.display = 'block';
+    if (sForm) sForm.style.display = 'none';
+    if (tLogin) tLogin.classList.add('active');
+    if (tSignup) tSignup.classList.remove('active');
   } else {
-    completedMilestoneIds.add(id);
-    if (card) card.classList.add('completed');
+    if (lForm) lForm.style.display = 'none';
+    if (sForm) sForm.style.display = 'block';
+    if (tLogin) tLogin.classList.remove('active');
+    if (tSignup) tSignup.classList.add('active');
   }
-
-  localStorage.setItem('edutech_completed_milestones', JSON.stringify(Array.from(completedMilestoneIds)));
-  updateProgress();
 }
 
-function updateProgress() {
-  if (currentMilestones.length === 0) return;
-
-  let completedCount = 0;
-  currentMilestones.forEach(m => {
-    if (completedMilestoneIds.has(m.id)) completedCount++;
-  });
-
-  const percentage = Math.round((completedCount / currentMilestones.length) * 100);
-  const pctEl = document.getElementById('progressPercentage');
-  const barEl = document.getElementById('progressBarFill');
-  const statusEl = document.getElementById('completionStatus');
-
-  if (pctEl) pctEl.textContent = `${percentage}%`;
-  if (barEl) barEl.style.width = `${percentage}%`;
-  if (statusEl) {
-    statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${completedCount} of ${currentMilestones.length} milestones finished.`;
-  }
-
-  checkCertificateEligibility(completedCount, currentMilestones.length);
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  currentUser = { name: email.split('@')[0], email };
+  localStorage.setItem('edutech_user', JSON.stringify(currentUser));
+  closeAuthModal();
+  checkAuthSession();
 }
 
-/* =========================================================
-   AI PREREQUISITE ASSISTANT
-   ========================================================= */
+function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  currentUser = { name, email };
+  localStorage.setItem('edutech_user', JSON.stringify(currentUser));
+  closeAuthModal();
+  checkAuthSession();
+}
+
+function checkAuthSession() {
+  const stored = localStorage.getItem('edutech_user');
+  const authBtn = document.getElementById('authNavBtn');
+  const prof = document.getElementById('userProfileNav');
+  const nameEl = document.getElementById('navUserName');
+
+  if (stored) {
+    currentUser = JSON.parse(stored);
+    if (authBtn) authBtn.style.display = 'none';
+    if (prof) prof.style.display = 'flex';
+    if (nameEl) nameEl.textContent = currentUser.name;
+  } else {
+    if (authBtn) authBtn.style.display = 'inline-flex';
+    if (prof) prof.style.display = 'none';
+  }
+}
+
+function logoutUser() {
+  localStorage.removeItem('edutech_user');
+  currentUser = null;
+  checkAuthSession();
+}
+
+function openAdminModal() {
+  const modal = document.getElementById('adminModal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeAdminModal() {
+  const modal = document.getElementById('adminModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function handleSecureAdminLogin(e) {
+  e.preventDefault();
+  const k = document.getElementById('adminSecretKeyInput').value.trim();
+  const p = document.getElementById('adminPinInput').value.trim();
+
+  if (k === DEFAULT_MASTER_KEY && p === DEFAULT_MASTER_PIN) {
+    alert("Admin Authenticated!");
+    closeAdminModal();
+  } else {
+    alert("Invalid Key or PIN!");
+  }
+}
+
 function openAssistantModal() {
   const modal = document.getElementById('aiModal');
   if (modal) modal.style.display = 'flex';
@@ -1200,65 +615,11 @@ function closeAssistantModal() {
   if (modal) modal.style.display = 'none';
 }
 
-function setQuickTopic(topic) {
-  const input = document.getElementById('assistantInput');
-  if (input) {
-    input.value = topic;
-    queryAIAssistant();
-  }
-}
-
 function queryAIAssistant() {
   const input = document.getElementById('assistantInput').value.trim();
-  const resultBox = document.getElementById('assistantResult');
-
+  const res = document.getElementById('assistantResult');
   if (!input) return;
 
-  resultBox.style.display = 'block';
-  resultBox.innerHTML = '<p><i class="fa-solid fa-spinner fa-spin"></i> Analyzing foundation bottlenecks...</p>';
-
-  setTimeout(() => {
-    const q = input.toLowerCase();
-    let diagnostic = {};
-
-    if (q.includes("recursion") || q.includes("dp")) {
-      diagnostic = {
-        topic: "Recursion & Dynamic Programming",
-        analysis: "Avoid jumping directly into Trees or DP. First build a strong grasp of mathematical recurrence relations and call stack dry runs.",
-        prereqs: ["Basic Loop logic (For/While)", "Functions & Call Stack mechanics", "Pointers / Reference memory model"],
-        lecture: { title: "Algorithms and Data Structures Complete Master Course", creator: "freeCodeCamp.org", url: "https://www.youtube.com/watch?v=8hly31xKli0" }
-      };
-    } else if (q.includes("react") || q.includes("hooks")) {
-      diagnostic = {
-        topic: "React.js State & Hooks",
-        analysis: "Before managing complex component states or Redux, ensure complete fluency in JavaScript ES6 array methods, immutability, and closures.",
-        prereqs: ["JavaScript ES6 (Arrow functions, Map/Filter)", "Immutability & Closures", "DOM Events Basics"],
-        lecture: { title: "React.js Complete Beginner Course", creator: "freeCodeCamp.org", url: "https://www.youtube.com/watch?v=bMknfKXIFA8" }
-      };
-    } else if (q.includes("node") || q.includes("express") || q.includes("backend")) {
-      diagnostic = {
-        topic: "Node.js & Express APIs",
-        analysis: "Focus on understanding the asynchronous event loop and client-server HTTP request/response cycle prior to writing REST controllers.",
-        prereqs: ["HTTP Verbs (GET, POST, PUT, DELETE)", "JSON Payload structure", "Promises & Async/Await"],
-        lecture: { title: "Node.js and Express.js Full Course", creator: "freeCodeCamp.org", url: "https://www.youtube.com/watch?v=Oe421EPjeBE" }
-      };
-    } else {
-      diagnostic = {
-        topic: input,
-        analysis: `Before diving deep into '${input}', reinforce core computer science fundamentals and structured problem decomposition.`,
-        prereqs: ["Core Programming Logic", "Algorithmic Decomposition", "Systematic Debugging"],
-        lecture: { title: "Analysis of Algorithms, Time & Space Complexity", creator: "Abdul Bari", url: "https://www.youtube.com/watch?v=0IAPZzGSbME" }
-      };
-    }
-
-    const prereqsList = diagnostic.prereqs.map(p => `<li>${p}</li>`).join('');
-
-    resultBox.innerHTML = `
-      <h4 style="color: #a78bfa; margin-bottom: 0.5rem;"><i class="fa-solid fa-lightbulb"></i> Foundation Diagnostic: ${diagnostic.topic}</h4>
-      <p style="margin-bottom: 0.5rem;"><strong>Analysis:</strong> ${diagnostic.analysis}</p>
-      <p><strong>Essential Prerequisites to Master First:</strong></p>
-      <ul style="margin: 0.4rem 0 0.8rem 1.4rem;">${prereqsList}</ul>
-      <p><strong>Recommended Foundation Video:</strong> <a href="${diagnostic.lecture.url}" target="_blank" style="color:#60a5fa; font-weight:600;">${diagnostic.lecture.title} (${diagnostic.lecture.creator})</a></p>
-    `;
-  }, 300);
+  res.style.display = 'block';
+  res.innerHTML = `<strong>Diagnostic for "${input}":</strong> Master fundamental JavaScript array iterations, call stack tracing, and memory references before advancing into complex application states.`;
 }
