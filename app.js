@@ -4,6 +4,9 @@ let currentUser = null;
 let currentActiveDomain = 'web-dev';
 let currentDomainTitleText = 'Full-Stack Web Development (MERN)';
 
+// Gamification State
+let userXP = 0;
+
 let DEFAULT_MASTER_KEY = "EDUTECH-KEY-2026";
 let DEFAULT_MASTER_PIN = "948210";
 let isAdmin = false;
@@ -15,6 +18,46 @@ let pomodoroTimer = null;
 let pomodoroSeconds = 25 * 60;
 let pomodoroRunning = false;
 let pomodoroIsBreak = false;
+
+// Pre-packaged Code Playground Templates
+const PLAYGROUND_TEMPLATES = {
+  counter: `<style>
+  body { font-family: sans-serif; background: #0f172a; color: white; text-align: center; padding: 2rem; }
+  .btn { padding: 0.6rem 1.2rem; font-size: 1rem; border: none; border-radius: 8px; cursor: pointer; margin: 0.4rem; }
+  .btn-inc { background: #10b981; color: white; }
+  .btn-dec { background: #ef4444; color: white; }
+  #count { font-size: 3rem; font-weight: bold; color: #38bdf8; margin: 1rem 0; }
+</style>
+<h2>JavaScript State Counter</h2>
+<div id="count">0</div>
+<button class="btn btn-inc" onclick="change(1)">Increment</button>
+<button class="btn btn-dec" onclick="change(-1)">Decrement</button>
+<script>
+  let c = 0;
+  function change(val) {
+    c += val;
+    document.getElementById('count').textContent = c;
+  }
+<\/script>`,
+
+  card: `<style>
+  body { font-family: sans-serif; background: #060912; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  .card { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); padding: 2rem; border-radius: 16px; color: white; text-align: center; width: 250px; }
+  .tag { background: #3b82f6; padding: 0.3rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+</style>
+<div class="card">
+  <span class="tag">MERN STACK</span>
+  <h3 style="margin: 1rem 0 0.5rem;">Glassmorphism</h3>
+  <p style="color: #94a3b8; font-size: 0.85rem;">Interactive UI component running live inside Edutech Sandbox.</p>
+</div>`,
+
+  button: `<style>
+  body { font-family: sans-serif; background: #0b1120; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+  .neon-btn { background: transparent; color: #06b6d4; border: 2px solid #06b6d4; padding: 1rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
+  .neon-btn:hover { background: #06b6d4; color: #000; box-shadow: 0 0 30px #06b6d4; transform: scale(1.05); }
+</style>
+<button class="neon-btn" onclick="alert('⚡ Neon Button Clicked!')">Click Me!</button>`
+};
 
 const DEFAULT_ROADMAPS = {
   'web-dev': {
@@ -72,6 +115,7 @@ const milestoneQuizzes = {
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthSession();
+  initXPDisplay();
 
   try { initBackground3D(); } catch (e) { console.warn("BG 3D load issue:", e); }
   try { initForeground3D(); } catch (e) { console.warn("FG 3D load issue:", e); }
@@ -93,8 +137,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadTrackWith3DTransition('web-dev', 'beginner');
   updatePomodoroDisplay();
+
+  // Pre-load default playground code
+  const codeArea = document.getElementById('playgroundCodeInput');
+  if (codeArea) {
+    codeArea.value = PLAYGROUND_TEMPLATES.counter;
+  }
 });
 
+/* =========================================================
+   FEATURE 1: IN-BROWSER LIVE CODE PLAYGROUND
+   ========================================================= */
+function openPlaygroundModal() {
+  const modal = document.getElementById('playgroundModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    runPlaygroundCode();
+  }
+}
+
+function closePlaygroundModal() {
+  const modal = document.getElementById('playgroundModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function runPlaygroundCode() {
+  const code = document.getElementById('playgroundCodeInput').value;
+  const iframe = document.getElementById('playgroundPreviewFrame');
+  if (iframe) {
+    iframe.srcdoc = code;
+    addXP(10, "Playground Run");
+  }
+}
+
+function resetPlaygroundCode() {
+  const sel = document.getElementById('playgroundTemplateSelect').value;
+  loadPlaygroundTemplate(sel);
+}
+
+function loadPlaygroundTemplate(type) {
+  const codeArea = document.getElementById('playgroundCodeInput');
+  if (codeArea && PLAYGROUND_TEMPLATES[type]) {
+    codeArea.value = PLAYGROUND_TEMPLATES[type];
+    runPlaygroundCode();
+  }
+}
+
+/* =========================================================
+   FEATURE 2: GAMIFIED XP & LEVEL-UP ENGINE
+   ========================================================= */
+function initXPDisplay() {
+  const savedXP = localStorage.getItem('edutech_user_xp');
+  userXP = savedXP ? parseInt(savedXP, 10) : 0;
+  renderXP();
+}
+
+function addXP(amount, reason = "") {
+  userXP += amount;
+  localStorage.setItem('edutech_user_xp', userXP);
+  renderXP();
+}
+
+function renderXP() {
+  const xpEl = document.getElementById('userXpDisplay');
+  const rankEl = document.getElementById('userRankDisplay');
+  if (!xpEl || !rankEl) return;
+
+  xpEl.textContent = `${userXP} XP`;
+
+  let rank = "Novice Coder 🐣";
+  let rankColor = "#67e8f9";
+
+  if (userXP >= 500) {
+    rank = "Full-Stack Wizard 🧙‍♂️";
+    rankColor = "#f59e0b";
+  } else if (userXP >= 200) {
+    rank = "Frontend Architect ⚡";
+    rankColor = "#a78bfa";
+  } else if (userXP >= 50) {
+    rank = "Junior Hacker 💻";
+    rankColor = "#34d399";
+  }
+
+  rankEl.textContent = rank;
+  rankEl.style.color = rankColor;
+}
+
+/* Video Modal */
 function playVideoModal(videoId, title, creator) {
   const modal = document.getElementById('videoModal');
   const iframe = document.getElementById('videoPlayerIframe');
@@ -114,6 +243,7 @@ function closeVideoModal() {
   if (modal) modal.style.display = 'none';
 }
 
+/* Pomodoro Timer */
 function togglePomodoro() {
   const btn = document.getElementById('pomoStartBtn');
   if (pomodoroRunning) {
@@ -164,6 +294,7 @@ function updatePomodoroDisplay() {
   if (display) display.textContent = `${m}:${s}`;
 }
 
+/* Certificate Generator */
 function checkCertificateEligibility(completedCount, totalCount) {
   const banner = document.getElementById('certClaimBanner');
   if (totalCount > 0 && completedCount === totalCount) {
@@ -231,6 +362,7 @@ function triggerConfetti() {
   update();
 }
 
+/* Quizzes & Notes */
 function toggleMilestoneQuiz(mId) {
   const box = document.getElementById(`quiz-box-${mId}`);
   if (box) box.style.display = box.style.display === 'block' ? 'none' : 'block';
@@ -241,11 +373,15 @@ function handleQuizAnswer(btn, isCorrect, exp) {
   parent.querySelectorAll('.quiz-opt-btn').forEach(b => b.disabled = true);
   btn.classList.add(isCorrect ? 'correct' : 'wrong');
 
+  if (isCorrect) {
+    addXP(25, "Quiz Correct");
+  }
+
   const expBox = document.createElement('div');
   expBox.style.fontSize = '0.74rem';
   expBox.style.marginTop = '0.4rem';
   expBox.style.color = isCorrect ? '#86efac' : '#fca5a5';
-  expBox.innerHTML = `<strong>${isCorrect ? 'Correct!' : 'Incorrect.'}</strong> ${exp}`;
+  expBox.innerHTML = `<strong>${isCorrect ? 'Correct! (+25 XP)' : 'Incorrect.'}</strong> ${exp}`;
   parent.parentElement.appendChild(expBox);
 }
 
@@ -259,6 +395,7 @@ function autoSaveMilestoneNote(mId) {
   localStorage.setItem(`edutech_notes_${mId}`, val);
 }
 
+/* Roadmap Engine */
 async function fetchRoadmap(domain, level) {
   try {
     const res = await fetch(`/api/roadmap?domain=${domain}&level=${level}`);
@@ -344,12 +481,13 @@ function renderRoadmap(title, description, milestones) {
       </div>
 
       <div class="milestone-extras-row">
-        <button class="extra-action-btn" onclick="toggleMilestoneQuiz('${m.id}')"><i class="fa-solid fa-list-check"></i> Quick Quiz</button>
-        <button class="extra-action-btn" onclick="toggleMilestoneNotes('${m.id}')"><i class="fa-solid fa-pen-nib"></i> Study Notes</button>
+        <button class="extra-action-btn" onclick="openPlaygroundModal()"><i class="fa-solid fa-code" style="color: #10b981;"></i> Practice in Sandbox</button>
+        <button class="extra-action-btn" onclick="toggleMilestoneQuiz('${m.id}')"><i class="fa-solid fa-list-check" style="color: #60a5fa;"></i> Quick Quiz</button>
+        <button class="extra-action-btn" onclick="toggleMilestoneNotes('${m.id}')"><i class="fa-solid fa-pen-nib" style="color: #f59e0b;"></i> Study Notes</button>
       </div>
 
       <div class="milestone-quiz-box" id="quiz-box-${m.id}">
-        <strong style="color: #93c5fd; font-size: 0.84rem; display:block; margin-bottom: 0.5rem;">Knowledge Check:</strong>
+        <strong style="color: #93c5fd; font-size: 0.84rem; display:block; margin-bottom: 0.5rem;">Knowledge Check (+25 XP each):</strong>
         ${quizHTML}
       </div>
 
@@ -371,6 +509,7 @@ function toggleMilestoneCompletion(id) {
   } else {
     completedMilestoneIds.add(id);
     if (card) card.classList.add('completed');
+    addXP(100, "Milestone Completed");
   }
 
   localStorage.setItem('edutech_completed_milestones', JSON.stringify(Array.from(completedMilestoneIds)));
@@ -401,6 +540,7 @@ function filterMilestones() {
   });
 }
 
+/* 3D Visualizer */
 function initBackground3D() {
   const canvas = document.getElementById('webgl-3d-canvas');
   if (!canvas || typeof THREE === 'undefined') return;
@@ -510,6 +650,7 @@ function navigateToSection3D(targetId, e) {
   if (el) el.scrollIntoView({ behavior: 'smooth' });
 }
 
+/* Auth & Modals Helper */
 function openAuthModal(tab = 'signup') {
   const modal = document.getElementById('authModal');
   if (modal) modal.style.display = 'flex';
